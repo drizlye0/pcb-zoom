@@ -1,13 +1,17 @@
 import { WebRTCProvider } from './types';
-import { RTCPeerConnection } from 'react-native-webrtc';
+import {
+  RTCPeerConnection,
+  MediaStream,
+  mediaDevices,
+} from 'react-native-webrtc';
 
 export class WebRTCManager implements WebRTCProvider {
   pc: RTCPeerConnection;
   candidates: RTCIceCandidateInit[] = [];
+  localStream: MediaStream | null = null;
 
   constructor() {
     this.pc = new RTCPeerConnection();
-
     this.pc.onicecandidate = (event: any) => {
       if (!event.candidate) return;
 
@@ -21,9 +25,24 @@ export class WebRTCManager implements WebRTCProvider {
     };
   }
 
+  async startLocalStream() {
+    this.localStream = await mediaDevices.getUserMedia({
+      // TODO: change to settings config
+      video: {
+        frameRate: 30,
+        facingMode: 'environment',
+      },
+    });
+
+    this.localStream?.getTracks().forEach((track) => {
+      this.pc.addTrack(track);
+    });
+  }
+
   async createOffer() {
     const offer = await this.pc.createOffer();
     await this.pc.setLocalDescription(offer);
+
     return offer;
   }
 
@@ -44,7 +63,7 @@ export class WebRTCManager implements WebRTCProvider {
   }
 
   async handleIceCandidates(candidates: RTCIceCandidateInit[]) {
-    if(candidates.length < 1) return;
+    if (candidates.length < 1) return;
 
     candidates.forEach((candidate) => {
       this.pc.addIceCandidate(candidate);
