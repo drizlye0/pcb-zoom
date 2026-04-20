@@ -4,9 +4,9 @@ import { WebRTCProvider } from '../webrtc/types';
 const DEV_MODE = true;
 
 export class HttpServer {
-  router: BridgeServer;
-  webrtc: WebRTCProvider;
-  port: number;
+  private router: BridgeServer;
+  private webrtc: WebRTCProvider;
+  private port: number;
 
   constructor(webrtc: WebRTCProvider, port: number) {
     this.port = port;
@@ -42,6 +42,19 @@ export class HttpServer {
 
   startServer() {
     this.setupRoutes();
-    this.router.listen(this.port);
+
+    try {
+      this.router.listen(this.port);
+    } catch (err) {
+      // TODO: improve error handling
+      console.error('error starting server', err);
+      return false;
+    }
+
+    return true;
+  }
+
+  stopServer() {
+    this.router.stop();
   }
 }
