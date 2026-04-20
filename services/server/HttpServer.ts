@@ -3,15 +3,29 @@ import { WebRTCProvider } from '../webrtc/types';
 
 const DEV_MODE = true;
 
+export type HttpServiceStatus = 'started' | 'stoped';
+type Listener = (status: HttpServiceStatus) => void;
+
 export class HttpServer {
   private router: BridgeServer;
   private webrtc: WebRTCProvider;
   private port: number;
+  private status: HttpServiceStatus = 'stoped';
+  private listeners: Set<Listener> = new Set();
 
   constructor(webrtc: WebRTCProvider, port: number) {
     this.port = port;
     this.webrtc = webrtc;
     this.router = new BridgeServer('http_server', DEV_MODE);
+  }
+
+  subscribe(listener: Listener) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
+
+  private notify() {
+    this.listeners.forEach((listener) => listener(this.status));
   }
 
   private setupRoutes() {
@@ -48,13 +62,18 @@ export class HttpServer {
     } catch (err) {
       // TODO: improve error handling
       console.error('error starting server', err);
-      return false;
+      this.status = 'stoped';
+      this.notify();
+      return;
     }
 
-    return true;
+    this.status = 'started';
+    this.notify();
   }
 
   stopServer() {
     this.router.stop();
+    this.status = 'stoped';
+    this.notify();
   }
 }

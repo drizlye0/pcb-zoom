@@ -1,26 +1,24 @@
-import { httpServer, webrtcManager } from '@/services';
-import { useState } from 'react';
+import { httpServer } from '@/services';
+import { useEffect, useState } from 'react';
 
 type HttpServiceStatus = 'started' | 'stoped';
 
 export const useHttpService = () => {
   const [status, setStatus] = useState<HttpServiceStatus>('stoped');
 
-  const startService = async () => {
-    const value = httpServer.startServer();
-    await webrtcManager.startLocalStream();
+  useEffect(() => {
+    const unsubscribe = httpServer.subscribe((newStatus) => {
+      setStatus(newStatus);
+    });
 
-    setStatus(value ? 'started' : 'stoped');
-  };
-
-  const stopServer = () => {
-    httpServer.stopServer();
-    setStatus('stoped');
-  };
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return {
-    startService,
-    stopServer,
+    startService: () => httpServer.startServer,
+    stopService: () => httpServer.stopServer,
     status,
   };
 };
