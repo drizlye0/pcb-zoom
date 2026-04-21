@@ -1,13 +1,23 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { Suspense, use } from 'react';
+import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useHttpService } from '@/hooks/use-http-service';
+import { getIpAddressAsync } from 'expo-network';
+
+const ipPromise = getIpAddressAsync();
+
+const IpAddress = ({ styles }: { styles: StyleProp<TextStyle> }) => {
+  const ipAddress = use(ipPromise);
+  return <ThemedText style={styles}>{ipAddress}</ThemedText>;
+};
 
 export function ServerCard() {
+  const { status } = useHttpService();
+
   const borderColor = useThemeColor({ light: '#E1E1E1', dark: '#333' }, 'icon');
   const iconBgColor = useThemeColor(
     { light: '#F5F5F5', dark: '#222' },
@@ -28,9 +38,13 @@ export function ServerCard() {
           <ThemedText type="defaultSemiBold" style={styles.title}>
             Server Address
           </ThemedText>
-          <ThemedText style={[styles.subtitle, { color: secondaryTextColor }]}>
-            192.168.1.105:8080
-          </ThemedText>
+          <Suspense fallback={
+            <ThemedText>Loading...</ThemedText>
+          }>
+            <IpAddress
+              styles={[styles.subtitle, { color: secondaryTextColor }]}
+            />
+          </Suspense>
         </View>
       </View>
 
@@ -43,7 +57,9 @@ export function ServerCard() {
             style={[styles.statusLabel, { color: secondaryTextColor }]}>
             Status
           </ThemedText>
-          <ThemedText type="defaultSemiBold">Offline</ThemedText>
+          <ThemedText type="defaultSemiBold">
+            {status == 'started' ? 'Online' : 'Offline'}
+          </ThemedText>
         </View>
       </View>
     </ThemedView>
