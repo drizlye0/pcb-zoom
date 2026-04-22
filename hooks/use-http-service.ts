@@ -17,8 +17,8 @@ export const useHttpService = () => {
   }, []);
 
   return {
-    startService: () => httpServer.startServer,
-    stopService: () => httpServer.stopServer,
+    startService: () => httpServer.startServer(),
+    stopService: () => httpServer.stopServer(),
     status,
   };
 };
