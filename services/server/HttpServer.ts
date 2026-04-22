@@ -55,6 +55,8 @@ export class HttpServer {
   }
 
   startServer() {
+    if (this.status === 'started') return;
+
     this.setupRoutes();
 
     try {
@@ -69,11 +71,15 @@ export class HttpServer {
 
     this.status = 'started';
     this.notify();
+    console.log('Server started on port: ', this.port);
   }
 
   stopServer() {
+    if (this.status === 'stoped') return;
+
     this.router.stop();
     this.status = 'stoped';
     this.notify();
+    console.log('Server stoped');
   }
 }
