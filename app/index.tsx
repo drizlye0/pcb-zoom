@@ -6,15 +6,25 @@ import { ServerCard } from '@/components/ui/server-card';
 import { ZoomControl } from '@/components/ui/zoom-control';
 import { ActionButton } from '@/components/ui/action-button';
 import { scale } from '@/constants/scale';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const colorscheme = useColorScheme() ? 'dark' : 'light';
+  const insets = useSafeAreaInsets();
 
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.mainContent}>
-        <ServerCard />
-        <ZoomControl />
+        <ThemedView style={styles.centerContainer}>
+          <ServerCard />
+          <ZoomControl />
+        </ThemedView>
+      </ThemedView>
+      <ThemedView
+        style={[
+          styles.footer,
+          { paddingBottom: Math.max(insets.bottom, scale(40)) },
+        ]}>
         <ActionButton />
       </ThemedView>
       <StatusBar style={colorscheme} />
@@ -25,13 +35,20 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
   },
-
   mainContent: {
     flex: 1,
-    margin: scale(20),
-    justifyContent: 'center',
+    paddingHorizontal: scale(20),
+    justifyContent: 'flex-start',
+  },
+  centerContainer: {
+    alignItems: 'center',
+    gap: scale(24),
+  },
+  footer: {
+    paddingHorizontal: scale(20),
+    // marginBottom: scale(10),
+    paddingTop: scale(10),
     alignItems: 'center',
   },
 });
