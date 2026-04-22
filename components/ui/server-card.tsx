@@ -52,7 +52,7 @@ export function ServerCard() {
 
       <View style={styles.bottomSection}>
         <View style={styles.statusRow}>
-          <View style={styles.statusDot} />
+          <View style={[styles.statusDot, { backgroundColor: status == "started" ? "#77fc03" : "#6B7280" }]} />
           <ThemedText
             style={[styles.statusLabel, { color: secondaryTextColor }]}>
             Status
