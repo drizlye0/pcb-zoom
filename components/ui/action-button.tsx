@@ -5,10 +5,19 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useHttpService } from '@/hooks/use-http-service';
 
 export function ActionButton() {
-  const backgroundColor = useThemeColor(
+  const { startService, stopService, status } = useHttpService();
+  const isActive = status == 'started' ? true : false;
+
+  const startBackgroundColor = useThemeColor(
     { light: '#1F2937', dark: '#F9FAFB' },
+    'text',
+  );
+
+  const stopBackgroundColor = useThemeColor(
+    { light: '#E02E2A', dark: '#FF8583' },
     'text',
   );
   const textColor = useThemeColor(
@@ -20,12 +29,22 @@ export function ActionButton() {
     <Pressable
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor, opacity: pressed ? 0.9 : 1 },
-      ]}>
+        {
+          backgroundColor: isActive
+            ? stopBackgroundColor
+            : startBackgroundColor,
+          opacity: pressed ? 0.9 : 1,
+        },
+      ]}
+      onPress={isActive ? stopService : startService}>
       <View style={styles.content}>
-        <MaterialIcons name="play-arrow" size={scale(24)} color={textColor} />
+        <MaterialIcons
+          name={isActive ? 'stop' : 'play-arrow'}
+          size={scale(24)}
+          color={textColor}
+        />
         <ThemedText style={[styles.text, { color: textColor }]}>
-          Start Server
+          {isActive ? 'Stop' : 'Start'}
         </ThemedText>
       </View>
     </Pressable>
