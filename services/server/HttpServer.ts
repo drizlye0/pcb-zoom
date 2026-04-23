@@ -1,5 +1,6 @@
-import { BridgeServer } from 'react-native-http-bridge-refurbished';
+import { BridgeServer, respond } from 'react-native-http-bridge-refurbished';
 import { WebRTCProvider } from '../webrtc/types';
+import { homepage } from './public';
 
 const DEV_MODE = true;
 
@@ -29,12 +30,19 @@ export class HttpServer {
   }
 
   private setupRoutes() {
+    this.router.get('/', async (req, res) => {
+      res.html(homepage, 200);
+    });
+
     this.router.get('/offer', async (_req, res) => {
+      console.log('GET /offer');
       const offer = await this.webrtc.createOffer();
       res.json({ sdp: offer.sdp, type: offer.type }, 200);
+      res.send(200, 'application-json', '');
     });
 
     this.router.post('/answer', async (req, res) => {
+      console.log('POST /answer');
       const answer: RTCSessionDescriptionInit = JSON.parse(req.data);
       await this.webrtc.handleAnswer(answer);
 
@@ -42,6 +50,7 @@ export class HttpServer {
     });
 
     this.router.post('/icecandidates', async (req, res) => {
+      console.log('POST /icecandidates');
       const remoteCandidates: RTCIceCandidateInit[] = JSON.parse(req.data);
       await this.webrtc.handleIceCandidates(remoteCandidates);
 
