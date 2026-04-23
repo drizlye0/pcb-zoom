@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingHorizontal: scale(20),
-    // marginBottom: scale(10),
     paddingTop: scale(10),
     alignItems: 'center',
   },

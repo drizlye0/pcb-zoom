@@ -1,5 +1,5 @@
-import { HttpServer } from "./server/HttpServer";
-import { WebRTCManager } from "./webrtc/WebRTCManager";
+import { HttpServer } from './server/HttpServer';
+import { WebRTCManager } from './webrtc/WebRTCManager';
 
 // TODO: change to settings config
 const PORT = 8080;

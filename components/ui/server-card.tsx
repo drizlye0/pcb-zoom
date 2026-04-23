@@ -38,9 +38,7 @@ export function ServerCard() {
           <ThemedText type="defaultSemiBold" style={styles.title}>
             Server Address
           </ThemedText>
-          <Suspense fallback={
-            <ThemedText>Loading...</ThemedText>
-          }>
+          <Suspense fallback={<ThemedText>Loading...</ThemedText>}>
             <IpAddress
               styles={[styles.subtitle, { color: secondaryTextColor }]}
             />
@@ -52,7 +50,12 @@ export function ServerCard() {
 
       <View style={styles.bottomSection}>
         <View style={styles.statusRow}>
-          <View style={[styles.statusDot, { backgroundColor: status == "started" ? "#77fc03" : "#6B7280" }]} />
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: status == 'started' ? '#77fc03' : '#6B7280' },
+            ]}
+          />
           <ThemedText
             style={[styles.statusLabel, { color: secondaryTextColor }]}>
             Status
