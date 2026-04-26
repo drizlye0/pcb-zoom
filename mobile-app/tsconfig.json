@@ -2,9 +2,13 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }
   },
+  "references": [
+    { "path": "../packages/react-native-nitro-http" }
+  ],
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
