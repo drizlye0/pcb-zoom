@@ -12,7 +12,14 @@
     ],
     "androidCxxLibName": "NitroHttp"
   },
-  "autolinking": {},
+  "autolinking": {
+    "HttpServer": {
+      "android": {
+        "language": "c++",
+        "implementationClassName": "HybridHttpServer"
+      }
+    }
+  },
   "ignorePaths": [
     "**/node_modules"
   ]
