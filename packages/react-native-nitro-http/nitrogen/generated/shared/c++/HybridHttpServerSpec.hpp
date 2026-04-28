@@ -48,7 +48,7 @@ namespace margelo::nitro::nitrohttp {
 
     public:
       // Methods
-      virtual void start(double port) = 0;
+      virtual void listen(double port) = 0;
       virtual void stop() = 0;
 
     protected:

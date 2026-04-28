@@ -14,7 +14,7 @@ namespace margelo::nitro::nitrohttp {
     HybridObject::loadHybridMethods();
     // load custom methods/properties
     registerHybrids(this, [](Prototype& prototype) {
-      prototype.registerHybridMethod("start", &HybridHttpServerSpec::start);
+      prototype.registerHybridMethod("listen", &HybridHttpServerSpec::listen);
       prototype.registerHybridMethod("stop", &HybridHttpServerSpec::stop);
     });
   }

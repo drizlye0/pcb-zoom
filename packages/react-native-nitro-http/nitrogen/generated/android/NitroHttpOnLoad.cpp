@@ -15,7 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <NitroModules/HybridObjectRegistry.hpp>
 
-
+#include "HybridHttpServer.hpp"
 
 namespace margelo::nitro::nitrohttp {
 
@@ -35,7 +35,15 @@ void registerAllNatives() {
   
 
   // Register Nitro Hybrid Objects
-  
+  HybridObjectRegistry::registerHybridObjectConstructor(
+    "HttpServer",
+    []() -> std::shared_ptr<HybridObject> {
+      static_assert(std::is_default_constructible_v<HybridHttpServer>,
+                    "The HybridObject \"HybridHttpServer\" is not default-constructible! "
+                    "Create a public constructor that takes zero arguments to be able to autolink this HybridObject.");
+      return std::make_shared<HybridHttpServer>();
+    }
+  );
 }
 
 } // namespace margelo::nitro::nitrohttp
