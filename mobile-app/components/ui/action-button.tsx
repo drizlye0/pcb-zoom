@@ -1,15 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Pressable, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useHttpService } from '@/hooks/use-http-service';
+import { HybridHttpServer } from 'react-native-nitro-http';
 
 export function ActionButton() {
-  const { startService, stopService, status } = useHttpService();
-  const isActive = status == 'started' ? true : false;
+  // const { startService, stopService, status } = useHttpService();
+  // const isActive = status == 'started' ? true : false;
+
+  const [isActive, setActive] = useState<boolean>(false);
+  const stopService = () => {
+    HybridHttpServer.stop();
+    setActive(false)
+  }
+
+  const startService = () => {
+    HybridHttpServer.listen(8080);
+    setActive(true);
+  }
 
   const startBackgroundColor = useThemeColor(
     { light: '#1F2937', dark: '#F9FAFB' },
