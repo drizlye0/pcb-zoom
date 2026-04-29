@@ -12,10 +12,17 @@ FetchContent_Declare(
   GIT_TAG        v0.43.1
 )
 
+FetchContent_Declare(
+  json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG        develop
+)
+
 set(HTTPLIB_USE_ZSTD_IF_AVAILABLE OFF CACHE BOOL "" FORCE)
 set(HTTPLIB_REQUIRE_ZSTD OFF CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(httplib)
+FetchContent_MakeAvailable(json)
 
 # Define C++ library and add all sources
 add_library(${PACKAGE_NAME} SHARED
@@ -40,4 +47,5 @@ target_link_libraries(
         ${LOG_LIB}
         android                                   # <-- Android core
         httplib                          # <-- cpp-httplib
+        nlohmann_json::nlohmann_json
 )
