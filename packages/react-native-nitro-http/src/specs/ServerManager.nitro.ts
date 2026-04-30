@@ -1,7 +1,7 @@
 import type { HybridObject } from 'react-native-nitro-modules';
 import type { HttpServer } from './HttpServer.nitro';
 
-export interface RTCDescriptionInit {
+export interface RTCSessionDescriptionInit {
   sdp: string;
   type: string;
 }
@@ -14,9 +14,11 @@ export interface RTCIceCandidatesInit {
 }
 
 export interface SignalingCallbacks {
-  offerCb: () => RTCDescriptionInit;
-  answerCb: (answer: RTCDescriptionInit) => void;
-  iceCandidatesCb: (candidates: RTCIceCandidatesInit[]) => RTCIceCandidatesInit[] | undefined;
+  offerCb: () => RTCSessionDescriptionInit;
+  answerCb: (answer: RTCSessionDescriptionInit) => void;
+  iceCandidatesCb: (
+    candidates: RTCIceCandidatesInit[]
+  ) => RTCIceCandidatesInit[] | undefined;
 }
 
 export interface ServerManager extends HybridObject<{
