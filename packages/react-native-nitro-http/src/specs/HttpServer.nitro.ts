@@ -1,7 +1,7 @@
-import { type HybridObject } from "react-native-nitro-modules"
+import { type HybridObject } from 'react-native-nitro-modules';
 
 export interface HttpServer extends HybridObject<{
-  android: "c++"
+  android: 'c++';
 }> {
   listen(port: number): void;
   stop(): void;

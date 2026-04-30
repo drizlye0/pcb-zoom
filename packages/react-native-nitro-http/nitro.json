@@ -18,6 +18,12 @@
         "language": "c++",
         "implementationClassName": "HybridHttpServer"
       }
+    },
+    "ServerManager": {
+      "android": {
+        "language": "c++",
+        "implementationClassName": "HybridServerManager"
+      }
     }
   },
   "ignorePaths": [

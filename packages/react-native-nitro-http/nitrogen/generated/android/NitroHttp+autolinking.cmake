@@ -34,6 +34,7 @@ target_sources(
   ../nitrogen/generated/android/NitroHttpOnLoad.cpp
   # Shared Nitrogen C++ sources
   ../nitrogen/generated/shared/c++/HybridHttpServerSpec.cpp
+  ../nitrogen/generated/shared/c++/HybridServerManagerSpec.cpp
   # Android-specific Nitrogen C++ sources
   
 )

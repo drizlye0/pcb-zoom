@@ -1,40 +1,92 @@
 #include "HybridHttpServer.hpp"
+#include "RTCDescriptionInit.hpp"
+#include "RTCIceCandidatesInit.hpp"
+#include "SignalingCallbacks.hpp"
+#include <NitroModules/HybridObject.hpp>
 #include <android/log.h>
+#include <exception>
+#include <functional>
 #include <httplib.h>
+#include <vector>
 
 namespace margelo::nitro::nitrohttp {
-void HybridHttpServer::listen(double port) {
-  if (_isRunning.load())
-    return;
+HybridHttpServer::HybridHttpServer(const SignalingCallbacks& callbacks) : HybridObject(TAG) {
+  _offerCb = callbacks.offerCb;
+  _answerCb = callbacks.answerCb;
+  _iceCandidatesCb = callbacks.iceCandidatesCb;
+}
 
-  _isRunning = true;
-
-  _srv.Get("/", [](const httplib::Request&, httplib::Response& res) {
+void HybridHttpServer::_setupRoutes() {
+  _srv.Get("/health", [](const httplib::Request&, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /");
     res.set_content("Hello, world from http server written on c++", "text/plain");
   });
 
-  _srv.Post("/jsontest", [](const httplib::Request& req, httplib::Response& res) {
-    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /jsontest");
+  _srv.Get("/offer", [this](const httplib::Request&, httplib::Response& res) {
+    auto promise = _offerCb();
+    auto offer = promise->await().get();
+
+    json payload = offer;
+    res.set_content(payload.dump(), "application/json");
+    res.status = StatusCode::OK_200;
+  });
+
+  _srv.Post("/answer", [this](const httplib::Request& req, httplib::Response& res) {
+    if (!req.headers.contains("application/json")) {
+      res.status = StatusCode::BadRequest_400;
+      return;
+    }
+
+    RTCDescriptionInit answer = {};
     try {
       json payload = json::parse(req.body);
-      Offer offer = payload.get<Offer>();
-      __android_log_print(
-          ANDROID_LOG_INFO, "NitroHttp", "sdp: %s , type: %s", offer.sdp.c_str(), offer.type.c_str()
-      );
-
-      offer.sdp = "sdp from c++ nitro module";
-      offer.type = "type from c++ nitro module";
-
-      json response = offer;
-
-      res.set_content(response.dump(), "application/json");
-    } catch (std::exception e) {
-      __android_log_print(
-          ANDROID_LOG_ERROR, "NitroHttp", "failed to process POST /jsontest endpoint"
-      );
+      answer = payload.get<RTCDescriptionInit>();
+    } catch (std::exception) {
+      res.status = StatusCode::InternalServerError_500;
+      return;
     }
+
+    _answerCb(answer);
+    res.status = StatusCode::Accepted_202;
   });
+
+  _srv.Post("/icecandidates", [this](const httplib::Request& req, httplib::Response& res) {
+    if (!req.headers.contains("application/json")) {
+      res.status = StatusCode::BadRequest_400;
+      return;
+    }
+
+    std::vector<RTCIceCandidatesInit> iceCandidates = {};
+    try {
+      json payload = json::parse(req.body);
+      iceCandidates = payload.get<std::vector<RTCIceCandidatesInit>>();
+    } catch (std::exception) {
+      res.status = StatusCode::InternalServerError_500;
+      return;
+    }
+
+    auto promise = _iceCandidatesCb(iceCandidates);
+    auto candidates = promise->await().get();
+    
+    if(!candidates.has_value()) {
+      res.set_content("{}", "application/json");
+      res.status = StatusCode::NoContent_204;
+      return;
+    }
+
+    json response = candidates.value();
+    res.set_content(response.dump(), "application/json");
+    res.status = StatusCode::OK_200;
+  });
+}
+
+void HybridHttpServer::listen(double port) {
+  if (_isRunning.load())
+    return;
+  
+  _isRunning = true;
+  
+  _setupRoutes();
 
   _serverThread = std::thread([this, port] {
     _srv.listen("0.0.0.0", static_cast<int>(port));
