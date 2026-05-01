@@ -7,7 +7,6 @@ import { ZoomControl } from '@/components/ui/zoom-control';
 import { ActionButton } from '@/components/ui/action-button';
 import { scale } from '@/constants/scale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HybridHttpServer } from "react-native-nitro-http"
 
 export default function HomeScreen() {
   const colorscheme = useColorScheme() ? 'dark' : 'light';

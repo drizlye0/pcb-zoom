@@ -72,6 +72,7 @@
         "react": "*",
         "react-native": "*",
         "react-native-nitro-modules": "*",
+        "react-native-webrtc": "^124.0.7",
       },
     },
   },
