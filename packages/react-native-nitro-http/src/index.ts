@@ -1,5 +1,10 @@
 import { NitroModules } from 'react-native-nitro-modules';
-import type { HttpServer, ServerManager, SignalingCallbacks } from './specs';
+import type {
+  HttpServer,
+  ServerManager,
+  SignalingCallbacks,
+  RTCIceCandidateInfo,
+} from './specs';
 
 const HybridServerManager =
   NitroModules.createHybridObject<ServerManager>('ServerManager');
@@ -9,4 +14,4 @@ export const createSignalingServer = (callbacks: SignalingCallbacks) => {
   return signalingServer;
 };
 
-export type { HttpServer, ServerManager, SignalingCallbacks };
+export type { HttpServer, ServerManager, SignalingCallbacks, RTCIceCandidateInfo };
