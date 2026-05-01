@@ -1,6 +1,6 @@
 #include "HybridHttpServer.hpp"
-#include "RTCDescriptionInit.hpp"
-#include "RTCIceCandidatesInit.hpp"
+#include "RTCIceCandidateInfo.hpp"
+#include "RTCSessionDescriptionInit.hpp"
 #include "SignalingCallbacks.hpp"
 #include <NitroModules/HybridObject.hpp>
 #include <android/log.h>
@@ -24,7 +24,7 @@ void HybridHttpServer::_setupRoutes() {
 
   _srv.Get("/offer", [this](const httplib::Request&, httplib::Response& res) {
     auto promise = _offerCb();
-    auto offer = promise->await().get();
+    auto offer = promise->await().get()->await().get();
 
     json payload = offer;
     res.set_content(payload.dump(), "application/json");
@@ -37,10 +37,10 @@ void HybridHttpServer::_setupRoutes() {
       return;
     }
 
-    RTCDescriptionInit answer = {};
+    RTCSessionDescriptionInit answer = {};
     try {
       json payload = json::parse(req.body);
-      answer = payload.get<RTCDescriptionInit>();
+      answer = payload.get<RTCSessionDescriptionInit>();
     } catch (std::exception) {
       res.status = StatusCode::InternalServerError_500;
       return;
@@ -56,19 +56,19 @@ void HybridHttpServer::_setupRoutes() {
       return;
     }
 
-    std::vector<RTCIceCandidatesInit> iceCandidates = {};
+    std::vector<RTCIceCandidateInfo> iceCandidates = {};
     try {
       json payload = json::parse(req.body);
-      iceCandidates = payload.get<std::vector<RTCIceCandidatesInit>>();
+      iceCandidates = payload.get<std::vector<RTCIceCandidateInfo>>();
     } catch (std::exception) {
       res.status = StatusCode::InternalServerError_500;
       return;
     }
 
     auto promise = _iceCandidatesCb(iceCandidates);
-    auto candidates = promise->await().get();
-    
-    if(!candidates.has_value()) {
+    auto candidates = promise->await().get()->await().get();
+
+    if (!candidates.has_value()) {
       res.set_content("{}", "application/json");
       res.status = StatusCode::NoContent_204;
       return;
@@ -83,9 +83,9 @@ void HybridHttpServer::_setupRoutes() {
 void HybridHttpServer::listen(double port) {
   if (_isRunning.load())
     return;
-  
+
   _isRunning = true;
-  
+
   _setupRoutes();
 
   _serverThread = std::thread([this, port] {

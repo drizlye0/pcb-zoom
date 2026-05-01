@@ -1,8 +1,8 @@
 #pragma once
 
 #include "HybridHttpServerSpec.hpp"
+#include "RTCIceCandidateInfo.hpp"
 #include "RTCSessionDescriptionInit.hpp"
-#include "RTCIceCandidatesInit.hpp"
 #include "SignalingCallbacks.hpp"
 #include "nlohmann/detail/macro_scope.hpp"
 #include <android/log.h>
@@ -16,9 +16,7 @@ using json = nlohmann::json;
 using StatusCode = httplib::StatusCode;
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCSessionDescriptionInit, sdp, type);
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    RTCIceCandidatesInit, candidate, sdpMLineIndex, sdpMid, usernameFragment
-);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCIceCandidateInfo, candidate, sdpMLineIndex, sdpMid);
 
 class HybridHttpServer : public HybridHttpServerSpec {
 public:

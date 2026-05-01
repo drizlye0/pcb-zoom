@@ -30,13 +30,13 @@
 
 // Forward declaration of `RTCSessionDescriptionInit` to properly resolve imports.
 namespace margelo::nitro::nitrohttp { struct RTCSessionDescriptionInit; }
-// Forward declaration of `RTCIceCandidatesInit` to properly resolve imports.
-namespace margelo::nitro::nitrohttp { struct RTCIceCandidatesInit; }
+// Forward declaration of `RTCIceCandidateInfo` to properly resolve imports.
+namespace margelo::nitro::nitrohttp { struct RTCIceCandidateInfo; }
 
 #include "RTCSessionDescriptionInit.hpp"
 #include <NitroModules/Promise.hpp>
 #include <functional>
-#include "RTCIceCandidatesInit.hpp"
+#include "RTCIceCandidateInfo.hpp"
 #include <vector>
 #include <optional>
 
@@ -47,13 +47,13 @@ namespace margelo::nitro::nitrohttp {
    */
   struct SignalingCallbacks final {
   public:
-    std::function<std::shared_ptr<Promise<RTCSessionDescriptionInit>>()> offerCb     SWIFT_PRIVATE;
-    std::function<void(const RTCSessionDescriptionInit& /* answer */)> answerCb     SWIFT_PRIVATE;
-    std::function<std::shared_ptr<Promise<std::optional<std::vector<RTCIceCandidatesInit>>>>(const std::vector<RTCIceCandidatesInit>& /* candidates */)> iceCandidatesCb     SWIFT_PRIVATE;
+    std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<RTCSessionDescriptionInit>>>>()> offerCb     SWIFT_PRIVATE;
+    std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<void>>>>(const RTCSessionDescriptionInit& /* answer */)> answerCb     SWIFT_PRIVATE;
+    std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<std::optional<std::vector<RTCIceCandidateInfo>>>>>>(const std::vector<RTCIceCandidateInfo>& /* candidates */)> iceCandidatesCb     SWIFT_PRIVATE;
 
   public:
     SignalingCallbacks() = default;
-    explicit SignalingCallbacks(std::function<std::shared_ptr<Promise<RTCSessionDescriptionInit>>()> offerCb, std::function<void(const RTCSessionDescriptionInit& /* answer */)> answerCb, std::function<std::shared_ptr<Promise<std::optional<std::vector<RTCIceCandidatesInit>>>>(const std::vector<RTCIceCandidatesInit>& /* candidates */)> iceCandidatesCb): offerCb(offerCb), answerCb(answerCb), iceCandidatesCb(iceCandidatesCb) {}
+    explicit SignalingCallbacks(std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<RTCSessionDescriptionInit>>>>()> offerCb, std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<void>>>>(const RTCSessionDescriptionInit& /* answer */)> answerCb, std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<std::optional<std::vector<RTCIceCandidateInfo>>>>>>(const std::vector<RTCIceCandidateInfo>& /* candidates */)> iceCandidatesCb): offerCb(offerCb), answerCb(answerCb), iceCandidatesCb(iceCandidatesCb) {}
 
   public:
     // SignalingCallbacks is not equatable because these properties are not equatable: offerCb, answerCb, iceCandidatesCb
@@ -69,16 +69,16 @@ namespace margelo::nitro {
     static inline margelo::nitro::nitrohttp::SignalingCallbacks fromJSI(jsi::Runtime& runtime, const jsi::Value& arg) {
       jsi::Object obj = arg.asObject(runtime);
       return margelo::nitro::nitrohttp::SignalingCallbacks(
-        JSIConverter<std::function<std::shared_ptr<Promise<margelo::nitro::nitrohttp::RTCSessionDescriptionInit>>()>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "offerCb"))),
-        JSIConverter<std::function<void(const margelo::nitro::nitrohttp::RTCSessionDescriptionInit&)>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "answerCb"))),
-        JSIConverter<std::function<std::shared_ptr<Promise<std::optional<std::vector<margelo::nitro::nitrohttp::RTCIceCandidatesInit>>>>(const std::vector<margelo::nitro::nitrohttp::RTCIceCandidatesInit>&)>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "iceCandidatesCb")))
+        JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<margelo::nitro::nitrohttp::RTCSessionDescriptionInit>>>>()>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "offerCb"))),
+        JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<void>>>>(const margelo::nitro::nitrohttp::RTCSessionDescriptionInit&)>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "answerCb"))),
+        JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<std::optional<std::vector<margelo::nitro::nitrohttp::RTCIceCandidateInfo>>>>>>(const std::vector<margelo::nitro::nitrohttp::RTCIceCandidateInfo>&)>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "iceCandidatesCb")))
       );
     }
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::nitrohttp::SignalingCallbacks& arg) {
       jsi::Object obj(runtime);
-      obj.setProperty(runtime, PropNameIDCache::get(runtime, "offerCb"), JSIConverter<std::function<std::shared_ptr<Promise<margelo::nitro::nitrohttp::RTCSessionDescriptionInit>>()>>::toJSI(runtime, arg.offerCb));
-      obj.setProperty(runtime, PropNameIDCache::get(runtime, "answerCb"), JSIConverter<std::function<void(const margelo::nitro::nitrohttp::RTCSessionDescriptionInit&)>>::toJSI(runtime, arg.answerCb));
-      obj.setProperty(runtime, PropNameIDCache::get(runtime, "iceCandidatesCb"), JSIConverter<std::function<std::shared_ptr<Promise<std::optional<std::vector<margelo::nitro::nitrohttp::RTCIceCandidatesInit>>>>(const std::vector<margelo::nitro::nitrohttp::RTCIceCandidatesInit>&)>>::toJSI(runtime, arg.iceCandidatesCb));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "offerCb"), JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<margelo::nitro::nitrohttp::RTCSessionDescriptionInit>>>>()>>::toJSI(runtime, arg.offerCb));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "answerCb"), JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<void>>>>(const margelo::nitro::nitrohttp::RTCSessionDescriptionInit&)>>::toJSI(runtime, arg.answerCb));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "iceCandidatesCb"), JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<std::optional<std::vector<margelo::nitro::nitrohttp::RTCIceCandidateInfo>>>>>>(const std::vector<margelo::nitro::nitrohttp::RTCIceCandidateInfo>&)>>::toJSI(runtime, arg.iceCandidatesCb));
       return obj;
     }
     static inline bool canConvert(jsi::Runtime& runtime, const jsi::Value& value) {
@@ -89,9 +89,9 @@ namespace margelo::nitro {
       if (!nitro::isPlainObject(runtime, obj)) {
         return false;
       }
-      if (!JSIConverter<std::function<std::shared_ptr<Promise<margelo::nitro::nitrohttp::RTCSessionDescriptionInit>>()>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "offerCb")))) return false;
-      if (!JSIConverter<std::function<void(const margelo::nitro::nitrohttp::RTCSessionDescriptionInit&)>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "answerCb")))) return false;
-      if (!JSIConverter<std::function<std::shared_ptr<Promise<std::optional<std::vector<margelo::nitro::nitrohttp::RTCIceCandidatesInit>>>>(const std::vector<margelo::nitro::nitrohttp::RTCIceCandidatesInit>&)>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "iceCandidatesCb")))) return false;
+      if (!JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<margelo::nitro::nitrohttp::RTCSessionDescriptionInit>>>>()>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "offerCb")))) return false;
+      if (!JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<void>>>>(const margelo::nitro::nitrohttp::RTCSessionDescriptionInit&)>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "answerCb")))) return false;
+      if (!JSIConverter<std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<std::optional<std::vector<margelo::nitro::nitrohttp::RTCIceCandidateInfo>>>>>>(const std::vector<margelo::nitro::nitrohttp::RTCIceCandidateInfo>&)>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "iceCandidatesCb")))) return false;
       return true;
     }
   };

@@ -31,6 +31,9 @@
 
 
 #include <string>
+#include <NitroModules/Null.hpp>
+#include <variant>
+#include <optional>
 
 namespace margelo::nitro::nitrohttp {
 
@@ -40,11 +43,11 @@ namespace margelo::nitro::nitrohttp {
   struct RTCSessionDescriptionInit final {
   public:
     std::string sdp     SWIFT_PRIVATE;
-    std::string type     SWIFT_PRIVATE;
+    std::optional<std::variant<nitro::NullType, std::string>> type     SWIFT_PRIVATE;
 
   public:
     RTCSessionDescriptionInit() = default;
-    explicit RTCSessionDescriptionInit(std::string sdp, std::string type): sdp(sdp), type(type) {}
+    explicit RTCSessionDescriptionInit(std::string sdp, std::optional<std::variant<nitro::NullType, std::string>> type): sdp(sdp), type(type) {}
 
   public:
     friend bool operator==(const RTCSessionDescriptionInit& lhs, const RTCSessionDescriptionInit& rhs) = default;
@@ -61,13 +64,13 @@ namespace margelo::nitro {
       jsi::Object obj = arg.asObject(runtime);
       return margelo::nitro::nitrohttp::RTCSessionDescriptionInit(
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdp"))),
-        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "type")))
+        JSIConverter<std::optional<std::variant<nitro::NullType, std::string>>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "type")))
       );
     }
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::nitrohttp::RTCSessionDescriptionInit& arg) {
       jsi::Object obj(runtime);
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "sdp"), JSIConverter<std::string>::toJSI(runtime, arg.sdp));
-      obj.setProperty(runtime, PropNameIDCache::get(runtime, "type"), JSIConverter<std::string>::toJSI(runtime, arg.type));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "type"), JSIConverter<std::optional<std::variant<nitro::NullType, std::string>>>::toJSI(runtime, arg.type));
       return obj;
     }
     static inline bool canConvert(jsi::Runtime& runtime, const jsi::Value& value) {
@@ -79,7 +82,7 @@ namespace margelo::nitro {
         return false;
       }
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdp")))) return false;
-      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "type")))) return false;
+      if (!JSIConverter<std::optional<std::variant<nitro::NullType, std::string>>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "type")))) return false;
       return true;
     }
   };
