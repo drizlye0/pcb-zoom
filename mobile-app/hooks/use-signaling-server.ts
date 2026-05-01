@@ -43,8 +43,8 @@ export const useSignalingServer = () => {
     const localCandidatesInfo = localCandidates.map((c) => {
       const candidateInfo: RTCIceCandidateInfo = {
         candidate: c.candidate ?? '',
-        sdpMLineIndex: c.sdpMLineIndex ?? null,
-        sdpMid: c.sdpMid ?? null,
+        sdpMLineIndex: c.sdpMLineIndex ?? 0,
+        sdpMid: c.sdpMid ?? "",
       };
 
       return candidateInfo;

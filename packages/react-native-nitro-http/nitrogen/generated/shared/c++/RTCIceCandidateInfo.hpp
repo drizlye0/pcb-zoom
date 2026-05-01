@@ -31,9 +31,6 @@
 
 
 #include <string>
-#include <NitroModules/Null.hpp>
-#include <variant>
-#include <optional>
 
 namespace margelo::nitro::nitrohttp {
 
@@ -43,12 +40,12 @@ namespace margelo::nitro::nitrohttp {
   struct RTCIceCandidateInfo final {
   public:
     std::string candidate     SWIFT_PRIVATE;
-    std::optional<std::variant<nitro::NullType, double>> sdpMLineIndex     SWIFT_PRIVATE;
-    std::optional<std::variant<nitro::NullType, std::string>> sdpMid     SWIFT_PRIVATE;
+    double sdpMLineIndex     SWIFT_PRIVATE;
+    std::string sdpMid     SWIFT_PRIVATE;
 
   public:
     RTCIceCandidateInfo() = default;
-    explicit RTCIceCandidateInfo(std::string candidate, std::optional<std::variant<nitro::NullType, double>> sdpMLineIndex, std::optional<std::variant<nitro::NullType, std::string>> sdpMid): candidate(candidate), sdpMLineIndex(sdpMLineIndex), sdpMid(sdpMid) {}
+    explicit RTCIceCandidateInfo(std::string candidate, double sdpMLineIndex, std::string sdpMid): candidate(candidate), sdpMLineIndex(sdpMLineIndex), sdpMid(sdpMid) {}
 
   public:
     friend bool operator==(const RTCIceCandidateInfo& lhs, const RTCIceCandidateInfo& rhs) = default;
@@ -65,15 +62,15 @@ namespace margelo::nitro {
       jsi::Object obj = arg.asObject(runtime);
       return margelo::nitro::nitrohttp::RTCIceCandidateInfo(
         JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "candidate"))),
-        JSIConverter<std::optional<std::variant<nitro::NullType, double>>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMLineIndex"))),
-        JSIConverter<std::optional<std::variant<nitro::NullType, std::string>>>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMid")))
+        JSIConverter<double>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMLineIndex"))),
+        JSIConverter<std::string>::fromJSI(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMid")))
       );
     }
     static inline jsi::Value toJSI(jsi::Runtime& runtime, const margelo::nitro::nitrohttp::RTCIceCandidateInfo& arg) {
       jsi::Object obj(runtime);
       obj.setProperty(runtime, PropNameIDCache::get(runtime, "candidate"), JSIConverter<std::string>::toJSI(runtime, arg.candidate));
-      obj.setProperty(runtime, PropNameIDCache::get(runtime, "sdpMLineIndex"), JSIConverter<std::optional<std::variant<nitro::NullType, double>>>::toJSI(runtime, arg.sdpMLineIndex));
-      obj.setProperty(runtime, PropNameIDCache::get(runtime, "sdpMid"), JSIConverter<std::optional<std::variant<nitro::NullType, std::string>>>::toJSI(runtime, arg.sdpMid));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "sdpMLineIndex"), JSIConverter<double>::toJSI(runtime, arg.sdpMLineIndex));
+      obj.setProperty(runtime, PropNameIDCache::get(runtime, "sdpMid"), JSIConverter<std::string>::toJSI(runtime, arg.sdpMid));
       return obj;
     }
     static inline bool canConvert(jsi::Runtime& runtime, const jsi::Value& value) {
@@ -85,8 +82,8 @@ namespace margelo::nitro {
         return false;
       }
       if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "candidate")))) return false;
-      if (!JSIConverter<std::optional<std::variant<nitro::NullType, double>>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMLineIndex")))) return false;
-      if (!JSIConverter<std::optional<std::variant<nitro::NullType, std::string>>>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMid")))) return false;
+      if (!JSIConverter<double>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMLineIndex")))) return false;
+      if (!JSIConverter<std::string>::canConvert(runtime, obj.getProperty(runtime, PropNameIDCache::get(runtime, "sdpMid")))) return false;
       return true;
     }
   };

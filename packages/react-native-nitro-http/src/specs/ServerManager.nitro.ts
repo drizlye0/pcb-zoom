@@ -4,8 +4,8 @@ import { type RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescri
 
 export interface RTCIceCandidateInfo {
   candidate: string;
-  sdpMLineIndex: number | null;
-  sdpMid: string | null;
+  sdpMLineIndex: number;
+  sdpMid: string;
 }
 
 export interface SignalingCallbacks {
