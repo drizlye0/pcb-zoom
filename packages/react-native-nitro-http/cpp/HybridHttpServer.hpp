@@ -1,7 +1,7 @@
 #pragma once
 
 #include "HybridHttpServerSpec.hpp"
-#include "RTCDescriptionInit.hpp"
+#include "RTCSessionDescriptionInit.hpp"
 #include "RTCIceCandidatesInit.hpp"
 #include "SignalingCallbacks.hpp"
 #include "nlohmann/detail/macro_scope.hpp"
@@ -15,7 +15,7 @@ namespace margelo::nitro::nitrohttp {
 using json = nlohmann::json;
 using StatusCode = httplib::StatusCode;
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCDescriptionInit, sdp, type);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCSessionDescriptionInit, sdp, type);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     RTCIceCandidatesInit, candidate, sdpMLineIndex, sdpMid, usernameFragment
 );
