@@ -28,6 +28,7 @@ FetchContent_MakeAvailable(json)
 add_library(${PACKAGE_NAME} SHARED
         src/main/cpp/cpp-adapter.cpp
         ../cpp/HybridHttpServer.cpp
+        ../cpp/HybridServerManager.cpp
 )
 
 # Add Nitrogen specs :)
