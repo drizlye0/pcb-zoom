@@ -5,6 +5,9 @@ import {
   mediaDevices,
 } from 'react-native-webrtc';
 
+import { RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
+import RTCSessionDescription from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
+
 export class WebRTCManager implements WebRTCProvider {
   pc: RTCPeerConnection;
   candidates: RTCIceCandidateInit[] = [];
