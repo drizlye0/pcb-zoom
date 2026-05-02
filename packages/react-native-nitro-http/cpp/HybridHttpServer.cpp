@@ -17,12 +17,25 @@ HybridHttpServer::HybridHttpServer(const SignalingCallbacks& callbacks) : Hybrid
 }
 
 void HybridHttpServer::_setupRoutes() {
+  _srv.set_post_routing_handler([](const httplib::Request&, httplib::Response& res) {
+    res.set_header("Access-Control-Allow-Origin", "*");
+    res.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  });
+
+  _srv.Options(R"(.*)", [](const httplib::Request&, httplib::Response& res) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "Options");
+    res.status = StatusCode::OK_200;
+  });
+
   _srv.Get("/health", [](const httplib::Request&, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /");
     res.set_content("Hello, world from http server written on c++", "text/plain");
   });
 
   _srv.Get("/offer", [this](const httplib::Request&, httplib::Response& res) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /offer");
+    res.set_content("Hello, world from http server written on c++", "text/plain");
     auto promise = _offerCb();
     auto offer = promise->await().get()->await().get();
 
@@ -32,6 +45,7 @@ void HybridHttpServer::_setupRoutes() {
   });
 
   _srv.Post("/answer", [this](const httplib::Request& req, httplib::Response& res) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /answer");
     if (!req.headers.contains("application/json")) {
       res.status = StatusCode::BadRequest_400;
       return;
@@ -51,6 +65,7 @@ void HybridHttpServer::_setupRoutes() {
   });
 
   _srv.Post("/icecandidates", [this](const httplib::Request& req, httplib::Response& res) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /icecandidates");
     if (!req.headers.contains("application/json")) {
       res.status = StatusCode::BadRequest_400;
       return;
