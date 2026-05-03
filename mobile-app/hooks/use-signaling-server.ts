@@ -1,24 +1,26 @@
 import { webrtcManager } from '@/services';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RTCIceCandidate } from 'react-native-webrtc';
 import { RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
 import {
   createSignalingServer,
+  HttpServer,
   RTCIceCandidateInfo,
 } from 'react-native-nitro-http';
 
 type ServerStatus = 'stopped' | 'disconnected' | 'connected';
 
 export const useSignalingServer = () => {
-  // TODO: handle real server status
   const [status, setStatus] = useState<ServerStatus>('stopped');
+  const serverRef = useRef<HttpServer | null>(null);
 
   const offerCb = async () => {
-    const offer = await webrtcManager.createOffer();
+    const offer = await webrtcManager.createOffer() as RTCSessionDescriptionInit;
     return offer;
   };
 
   const answerCb = async (answer: RTCSessionDescriptionInit) => {
+    console.log("handle answer: ", JSON.stringify(answer));
     await webrtcManager.handleAnswer(answer);
   };
 
@@ -33,6 +35,7 @@ export const useSignalingServer = () => {
       return candidate;
     });
 
+    console.log("remote candidates: ",JSON.stringify(remoteCandidates));
     await webrtcManager.handleIceCandidates(remoteCandidates);
     const localCandidates = webrtcManager.getIceCandidates();
 
@@ -44,7 +47,7 @@ export const useSignalingServer = () => {
       const candidateInfo: RTCIceCandidateInfo = {
         candidate: c.candidate ?? '',
         sdpMLineIndex: c.sdpMLineIndex ?? 0,
-        sdpMid: c.sdpMid ?? "",
+        sdpMid: c.sdpMid ?? '',
       };
 
       return candidateInfo;
@@ -53,19 +56,26 @@ export const useSignalingServer = () => {
     return localCandidatesInfo;
   };
 
-  const server = createSignalingServer({
-    offerCb,
-    answerCb,
-    iceCandidatesCb,
-  });
+  useEffect(() => {
+    serverRef.current = createSignalingServer({
+      offerCb,
+      answerCb,
+      iceCandidatesCb,
+    });
+
+    return () => {
+      serverRef.current?.stop();
+      serverRef.current = null;
+    };
+  }, []);
 
   const listen = (port: number) => {
-    server.listen(port);
+    serverRef.current?.listen(port);
     setStatus('disconnected');
   };
 
   const stop = () => {
-    server.stop();
+    serverRef.current?.stop();
     setStatus('stopped');
   };
 
