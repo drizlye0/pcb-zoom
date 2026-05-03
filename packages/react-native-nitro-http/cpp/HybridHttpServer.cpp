@@ -46,7 +46,8 @@ void HybridHttpServer::_setupRoutes() {
 
   _srv.Post("/answer", [this](const httplib::Request& req, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /answer");
-    if (!req.headers.contains("application/json")) {
+    auto contentType = req.get_header_value("Content-Type");
+    if(contentType.find("application/json") == std::string::npos) {
       res.status = StatusCode::BadRequest_400;
       return;
     }
@@ -55,7 +56,8 @@ void HybridHttpServer::_setupRoutes() {
     try {
       json payload = json::parse(req.body);
       answer = payload.get<RTCSessionDescriptionInit>();
-    } catch (std::exception) {
+    } catch (std::exception e) {
+    __android_log_print(ANDROID_LOG_ERROR, "NitroHttp", "Error Parsing json: %s", e.what());
       res.status = StatusCode::InternalServerError_500;
       return;
     }
@@ -66,7 +68,8 @@ void HybridHttpServer::_setupRoutes() {
 
   _srv.Post("/icecandidates", [this](const httplib::Request& req, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /icecandidates");
-    if (!req.headers.contains("application/json")) {
+    auto contentType = req.get_header_value("Content-Type");
+    if(contentType.find("application/json") == std::string::npos) {
       res.status = StatusCode::BadRequest_400;
       return;
     }
@@ -84,7 +87,7 @@ void HybridHttpServer::_setupRoutes() {
     auto candidates = promise->await().get()->await().get();
 
     if (!candidates.has_value()) {
-      res.set_content("{}", "application/json");
+      res.set_content(json{}.dump(), "application/json");
       res.status = StatusCode::NoContent_204;
       return;
     }
