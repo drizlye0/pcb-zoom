@@ -6,7 +6,6 @@ import {
 } from 'react-native-webrtc';
 
 import { RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
-import RTCSessionDescription from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
 
 export class WebRTCManager implements WebRTCProvider {
   pc: RTCPeerConnection;
@@ -24,6 +23,7 @@ export class WebRTCManager implements WebRTCProvider {
         sdpMLineIndex: event.candidate.sdpMLineIndex ?? null,
       };
 
+      console.log("local ice candidate: ", candidateData);
       this.candidates.push(candidateData);
     };
   }
@@ -56,12 +56,7 @@ export class WebRTCManager implements WebRTCProvider {
   }
 
   async handleAnswer(answer: RTCSessionDescriptionInit) {
-    const answerData = new RTCSessionDescription({
-      sdp: answer.sdp,
-      type: answer.type,
-    });
-
-    await this.pc.setRemoteDescription(answerData);
+    await this.pc.setRemoteDescription(answer);
     return;
   }
 
