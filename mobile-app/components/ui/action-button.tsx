@@ -4,22 +4,20 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { useHttpService } from '@/hooks/use-http-service';
-import { HybridHttpServer } from 'react-native-nitro-http';
+import { useSignalingServer } from '@/hooks/use-signaling-server';
+import { webrtcManager } from '@/services';
 
 export function ActionButton() {
   // const { startService, stopService, status } = useHttpService();
-  // const isActive = status == 'started' ? true : false;
-
-  const [isActive, setActive] = useState<boolean>(false);
+  const { listen , stop, status } = useSignalingServer();
+  const isActive = status != 'stopped' ? true : false;
   const stopService = () => {
-    HybridHttpServer.stop();
-    setActive(false)
+    stop()
   }
 
-  const startService = () => {
-    HybridHttpServer.listen(8080);
-    setActive(true);
+  const startService = async () => {
+    listen(8080)
+    await webrtcManager.startLocalStream();
   }
 
   const startBackgroundColor = useThemeColor(
