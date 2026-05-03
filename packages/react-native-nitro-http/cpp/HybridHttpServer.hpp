@@ -17,23 +17,35 @@ using json = nlohmann::json;
 using StatusCode = httplib::StatusCode;
 
 inline void to_json(json& j, const RTCSessionDescriptionInit& descInit) {
-  std::string type = "";
+  j["sdp"] = descInit.sdp;
 
-  if(auto *s = std::get_if<std::string>(&descInit.type.value())) {
-    type = *s;
+  if (!descInit.type.has_value()) {
+    j["type"] = nullptr;
+    return;
   }
-  
-  j = json{
-    {"sdp", descInit.sdp},
-    {"type", type}
-  };
+
+  const auto& var = descInit.type.value();
+  if (std::holds_alternative<nitro::NullType>(var)) {
+    j["type"] = nullptr;
+  } else if (const auto* s = std::get_if<std::string>(&var)) {
+    j["type"] = *s;
+  }
 }
 
 inline void from_json(const json& j, RTCSessionDescriptionInit& descInit) {
-  std::string type = "";
   j.at("sdp").get_to(descInit.sdp);
-  j.at("type").get_to(type);
-  descInit.type.value().emplace<std::string>(type);
+
+  if (!j.contains("type")) {
+    descInit.type = std::nullopt;
+    return;
+  }
+
+  const auto& t = j.at("type");
+  if (t.is_null()) {
+    descInit.type = std::variant<nitro::NullType, std::string>{nitro::NullType{}};
+  } else {
+    descInit.type = std::variant<nitro::NullType, std::string>{t.get<std::string>()};
+  }
 }
 
 // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCSessionDescriptionInit, sdp, type);
