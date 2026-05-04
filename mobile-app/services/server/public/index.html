@@ -18,14 +18,22 @@
     <input id="serverIP" type="text" size="20" placeholder="server ip" />
     <input id="serverPort" type="text" size="20" placeholder="port" />
     <button id="connectBtn">connect</button>
+    <button id="stateBtn">state</button>
 
     <script>
       const connectBtn = document.getElementById('connectBtn');
       const remoteStream = document.getElementById('remoteStream');
       const serverIPInput = document.getElementById('serverIP');
       const serverPortInput = document.getElementById('serverPort');
+      const stateBtn = document.getElementById("stateBtn");
 
-      const pc = new RTCPeerConnection();
+      const pc = new RTCPeerConnection({      
+        iceServers: [
+            {
+              urls: "stun:stun3.l.google.com:19302",
+            },
+        ],
+      });
       let localCandidates = [];
 
       pc.onicecandidate = (event) => {
@@ -103,6 +111,11 @@
           console.log('No se recibieron candidatos remotos');
         }
       };
+      
+      const connectionState = () => {
+        const state = pc.connectionState;
+        console.log("state: ", state);
+      }
 
       const connect = async () => {
         try {
@@ -136,6 +149,7 @@
       };
 
       connectBtn.onclick = connect;
+      stateBtn.onclick = connectionState;
     </script>
   </body>
 </html>

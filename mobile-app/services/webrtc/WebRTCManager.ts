@@ -13,7 +13,14 @@ export class WebRTCManager implements WebRTCProvider {
   localStream: MediaStream | null = null;
 
   constructor() {
-    this.pc = new RTCPeerConnection();
+    this.pc = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: 'stun:stun3.l.google.com:19302',
+        },
+      ],
+    });
+
     this.pc.onicecandidate = (event: any) => {
       if (!event.candidate) return;
 
@@ -23,7 +30,7 @@ export class WebRTCManager implements WebRTCProvider {
         sdpMLineIndex: event.candidate.sdpMLineIndex ?? null,
       };
 
-      console.log("local ice candidate: ", candidateData);
+      console.log('local ice candidate: ', candidateData);
       this.candidates.push(candidateData);
     };
   }
