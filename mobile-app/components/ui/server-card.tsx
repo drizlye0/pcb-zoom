@@ -5,8 +5,8 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { useHttpService } from '@/hooks/use-http-service';
 import { getIpAddressAsync } from 'expo-network';
+import { useSignalingServer } from '@/hooks/use-signaling-server';
 
 const ipPromise = getIpAddressAsync();
 
@@ -16,7 +16,7 @@ const IpAddress = ({ styles }: { styles: StyleProp<TextStyle> }) => {
 };
 
 export function ServerCard() {
-  const { status } = useHttpService();
+  const { status } = useSignalingServer();
 
   const borderColor = useThemeColor({ light: '#E1E1E1', dark: '#333' }, 'icon');
   const iconBgColor = useThemeColor(
