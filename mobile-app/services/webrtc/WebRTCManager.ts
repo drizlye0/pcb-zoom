@@ -41,11 +41,13 @@ export class WebRTCManager implements WebRTCProvider {
       video: {
         frameRate: 30,
         facingMode: 'environment',
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
       },
     });
 
     this.localStream?.getTracks().forEach((track) => {
-      this.pc.addTrack(track);
+      this.pc.addTrack(track, this.localStream!);
     });
   }
 
