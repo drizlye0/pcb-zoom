@@ -39,10 +39,10 @@ export class WebRTCManager implements WebRTCProvider {
     this.localStream = await mediaDevices.getUserMedia({
       // TODO: change to settings config
       video: {
-        frameRate: 30,
+        frameRate: 60,
         facingMode: 'environment',
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
+        width: { exact: 1920 },
+        height: { exact: 1080 },
       },
     });
 
@@ -52,7 +52,9 @@ export class WebRTCManager implements WebRTCProvider {
   }
 
   async createOffer() {
-    const offer = await this.pc.createOffer();
+    const offer = await this.pc.createOffer() as RTCSessionDescriptionInit;
+    offer.sdp = offer.sdp.replace(/a=extmap.* urn:3gpp:video-orientation\r\n/, "");
+    
     await this.pc.setLocalDescription(offer);
 
     return offer;
