@@ -6,19 +6,37 @@
     <title>pcb zoom</title>
   </head>
 
+  <style>
+    video {
+      transform: rotate(-90deg);
+      background-color: #000;
+    }
+    body {
+      height: 100vh;
+    }
+    div {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+
   <body>
+    <input id="serverIP" type="text" size="20" placeholder="server ip" />
+    <input id="serverPort" type="text" size="20" placeholder="port" />
+    <br />
+    <br />
+    <button id="connectBtn">connect</button>
+    <button id="stateBtn">state</button>
+
+    <div>
     <video
       id="remoteStream"
       autoplay
       playsinline
-      width="1280"
-      height="720"
+      width="1080"
+      height="1920"
       class="remoteStream"></video>
-    <br />
-    <input id="serverIP" type="text" size="20" placeholder="server ip" />
-    <input id="serverPort" type="text" size="20" placeholder="port" />
-    <button id="connectBtn">connect</button>
-    <button id="stateBtn">state</button>
+    </div>
 
     <script>
       const connectBtn = document.getElementById('connectBtn');
