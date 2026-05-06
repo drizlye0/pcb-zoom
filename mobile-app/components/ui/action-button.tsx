@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Pressable, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemedText } from '@/components/themed-text';
@@ -8,11 +8,12 @@ import { useSignalingServer } from '@/hooks/use-signaling-server';
 import { webrtcManager } from '@/services';
 
 export function ActionButton() {
-  // const { startService, stopService, status } = useHttpService();
   const { listen , stop, status } = useSignalingServer();
   const isActive = status != 'stopped' ? true : false;
+  
   const stopService = () => {
     stop()
+    webrtcManager.closePeer();
   }
 
   const startService = async () => {

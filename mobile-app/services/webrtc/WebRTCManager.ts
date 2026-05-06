@@ -52,9 +52,12 @@ export class WebRTCManager implements WebRTCProvider {
   }
 
   async createOffer() {
-    const offer = await this.pc.createOffer() as RTCSessionDescriptionInit;
-    offer.sdp = offer.sdp.replace(/a=extmap.* urn:3gpp:video-orientation\r\n/, "");
-    
+    const offer = (await this.pc.createOffer()) as RTCSessionDescriptionInit;
+    offer.sdp = offer.sdp.replace(
+      /a=extmap.* urn:3gpp:video-orientation\r\n/,
+      '',
+    );
+
     await this.pc.setLocalDescription(offer);
 
     return offer;
@@ -77,5 +80,9 @@ export class WebRTCManager implements WebRTCProvider {
     candidates.forEach((candidate) => {
       this.pc.addIceCandidate(candidate);
     });
+  }
+
+  closePeer() {
+    this.pc?.close();
   }
 }
