@@ -1,5 +1,12 @@
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+} from 'react';
 import { webrtcManager } from '@/services';
-import { useEffect, useRef, useState } from 'react';
 import { RTCIceCandidate } from 'react-native-webrtc';
 import { RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
 import {
@@ -10,17 +17,32 @@ import {
 
 type ServerStatus = 'stopped' | 'disconnected' | 'connected';
 
-export const useSignalingServer = () => {
+interface SignalingServerContextType {
+  status: ServerStatus;
+  listen: (port: number) => void;
+  stop: () => void;
+}
+
+const SignalingServerContext = createContext<SignalingServerContextType | null>(
+  null,
+);
+
+export const SignalingServerProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const [status, setStatus] = useState<ServerStatus>('stopped');
   const serverRef = useRef<HttpServer | null>(null);
 
   const offerCb = async () => {
-    const offer = await webrtcManager.createOffer() as RTCSessionDescriptionInit;
+    const offer =
+      (await webrtcManager.createOffer()) as RTCSessionDescriptionInit;
     return offer;
   };
 
   const answerCb = async (answer: RTCSessionDescriptionInit) => {
-    console.log("handle answer: ", JSON.stringify(answer));
+    console.log('handle answer: ', JSON.stringify(answer));
     await webrtcManager.handleAnswer(answer);
   };
 
@@ -35,7 +57,7 @@ export const useSignalingServer = () => {
       return candidate;
     });
 
-    console.log("remote candidates: ",JSON.stringify(remoteCandidates));
+    console.log('remote candidates: ', JSON.stringify(remoteCandidates));
     await webrtcManager.handleIceCandidates(remoteCandidates);
     const localCandidates = webrtcManager.getIceCandidates();
 
@@ -79,9 +101,19 @@ export const useSignalingServer = () => {
     setStatus('stopped');
   };
 
-  return {
-    listen,
-    stop,
-    status,
-  };
+  return (
+    <SignalingServerContext.Provider value={{ status, listen, stop }}>
+      {children}
+    </SignalingServerContext.Provider>
+  );
+};
+
+export const useSignalingServer = () => {
+  const context = useContext(SignalingServerContext);
+  if (!context) {
+    throw new Error(
+      'useSignalingServer must be used within SignalingServerProvider',
+    );
+  }
+  return context;
 };
