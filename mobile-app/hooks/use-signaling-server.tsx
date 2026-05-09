@@ -6,6 +6,10 @@ import React, {
   useRef,
   ReactNode,
 } from 'react';
+import { Linking } from 'react-native';
+import BackgroundService, {
+  BackgroundTaskOptions,
+} from 'react-native-background-actions';
 import { webrtcManager } from '@/services';
 import { RTCIceCandidate } from 'react-native-webrtc';
 import { RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
@@ -14,18 +18,30 @@ import {
   HttpServer,
   RTCIceCandidateInfo,
 } from 'react-native-nitro-http';
+import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
 
 type ServerStatus = 'stopped' | 'disconnected' | 'connected';
 
 interface SignalingServerContextType {
   status: ServerStatus;
-  listen: (port: number) => void;
+  startBackground: (port: number) => Promise<void>;
   stop: () => void;
 }
 
 const SignalingServerContext = createContext<SignalingServerContextType | null>(
   null,
 );
+
+const bgServiceOptions: BackgroundTaskOptions = {
+  taskName: 'pcb zoom background server',
+  taskTitle: 'pcb zoom',
+  taskDesc: 'Waiting for connection. Tap to stop',
+  taskIcon: {
+    name: 'ic_launcher',
+    type: 'mipmap',
+  },
+  linkingURI: 'pcbzoom://server/stop',
+};
 
 export const SignalingServerProvider = ({
   children,
@@ -96,13 +112,28 @@ export const SignalingServerProvider = ({
     setStatus('disconnected');
   };
 
+  const startBackground = async (port: number) => {
+    const task = async () => {
+      listen(port);
+    };
+    await BackgroundService.start(task, bgServiceOptions);
+  };
+
   const stop = () => {
+    BackgroundService.stop();
     serverRef.current?.stop();
     setStatus('stopped');
   };
 
+  const handleStop = (event: { url: string }) => {
+    console.log(event.url);
+    stop();
+  };
+
+  Linking.addEventListener('url', handleStop);
+
   return (
-    <SignalingServerContext.Provider value={{ status, listen, stop }}>
+    <SignalingServerContext.Provider value={{ status, startBackground, stop }}>
       {children}
     </SignalingServerContext.Provider>
   );

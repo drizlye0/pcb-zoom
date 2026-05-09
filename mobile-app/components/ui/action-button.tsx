@@ -8,7 +8,7 @@ import { useSignalingServer } from '@/hooks/use-signaling-server';
 import { webrtcManager } from '@/services';
 
 export function ActionButton() {
-  const { listen, stop, status } = useSignalingServer();
+  const { startBackground, stop, status } = useSignalingServer();
   const isActive = status !== 'stopped' ? true : false;
 
   const stopService = () => {
@@ -17,7 +17,7 @@ export function ActionButton() {
   };
 
   const startService = async () => {
-    listen(8080);
+    startBackground(8080);
     await webrtcManager.startLocalStream();
   };
 
