@@ -8,18 +8,18 @@ import { useSignalingServer } from '@/hooks/use-signaling-server';
 import { webrtcManager } from '@/services';
 
 export function ActionButton() {
-  const { listen , stop, status } = useSignalingServer();
-  const isActive = status != 'stopped' ? true : false;
-  
+  const { listen, stop, status } = useSignalingServer();
+  const isActive = status !== 'stopped' ? true : false;
+
   const stopService = () => {
-    stop()
+    stop();
     webrtcManager.closePeer();
-  }
+  };
 
   const startService = async () => {
-    listen(8080)
+    listen(8080);
     await webrtcManager.startLocalStream();
-  }
+  };
 
   const startBackgroundColor = useThemeColor(
     { light: '#1F2937', dark: '#F9FAFB' },

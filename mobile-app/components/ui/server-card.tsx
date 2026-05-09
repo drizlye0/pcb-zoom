@@ -18,6 +18,18 @@ const IpAddress = ({ styles }: { styles: StyleProp<TextStyle> }) => {
 export function ServerCard() {
   const { status } = useSignalingServer();
 
+  const getStatusColor = () => {
+    if (status === 'disconnected') {
+      return '#e6a309';
+    }
+
+    if (status === 'connected') {
+      return '#77fc03';
+    }
+
+    return '#6B7280';
+  };
+
   const borderColor = useThemeColor({ light: '#E1E1E1', dark: '#333' }, 'icon');
   const iconBgColor = useThemeColor(
     { light: '#F5F5F5', dark: '#222' },
@@ -53,15 +65,17 @@ export function ServerCard() {
           <View
             style={[
               styles.statusDot,
-              { backgroundColor: status == 'started' ? '#77fc03' : '#6B7280' },
+              {
+                backgroundColor: getStatusColor(),
+              },
             ]}
           />
           <ThemedText
             style={[styles.statusLabel, { color: secondaryTextColor }]}>
-            Status
+            Status:
           </ThemedText>
-          <ThemedText type="defaultSemiBold">
-            {status == 'started' ? 'Online' : 'Offline'}
+          <ThemedText type="defaultSemiBold" style={styles.statusLabel}>
+            {status}
           </ThemedText>
         </View>
       </View>
