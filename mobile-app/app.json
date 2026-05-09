@@ -43,13 +43,13 @@
         }
       ],
       [
-      "expo-build-properties",
-      {
-        "android": {
-          "minSdkVersion": 28,
-          "kotlinVersion": "2.2.20"
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 28,
+            "kotlinVersion": "2.2.20"
+          }
         }
-      }
       ]
     ],
     "experiments": {

@@ -29,13 +29,13 @@
     <button id="stateBtn">state</button>
 
     <div>
-    <video
-      id="remoteStream"
-      autoplay
-      playsinline
-      width="1080"
-      height="1920"
-      class="remoteStream"></video>
+      <video
+        id="remoteStream"
+        autoplay
+        playsinline
+        width="1080"
+        height="1920"
+        class="remoteStream"></video>
     </div>
 
     <script>
@@ -43,13 +43,13 @@
       const remoteStream = document.getElementById('remoteStream');
       const serverIPInput = document.getElementById('serverIP');
       const serverPortInput = document.getElementById('serverPort');
-      const stateBtn = document.getElementById("stateBtn");
+      const stateBtn = document.getElementById('stateBtn');
 
-      const pc = new RTCPeerConnection({      
+      const pc = new RTCPeerConnection({
         iceServers: [
-            {
-              urls: "stun:stun3.l.google.com:19302",
-            },
+          {
+            urls: 'stun:stun3.l.google.com:19302',
+          },
         ],
       });
       let localCandidates = [];
@@ -129,11 +129,11 @@
           console.log('No se recibieron candidatos remotos');
         }
       };
-      
+
       const connectionState = () => {
         const state = pc.connectionState;
-        console.log("state: ", state);
-      }
+        console.log('state: ', state);
+      };
 
       const connect = async () => {
         try {

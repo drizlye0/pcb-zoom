@@ -7,8 +7,6 @@
       "@/*": ["./*"]
     }
   },
-  "references": [
-    { "path": "../packages/react-native-nitro-http" }
-  ],
+  "references": [{ "path": "../packages/react-native-nitro-http" }],
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
