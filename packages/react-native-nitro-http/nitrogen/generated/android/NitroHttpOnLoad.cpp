@@ -15,6 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <NitroModules/HybridObjectRegistry.hpp>
 
+#include "JHybridHttpServerKtSpec.hpp"
 #include "HybridServerManager.hpp"
 
 namespace margelo::nitro::nitrohttp {
@@ -32,7 +33,7 @@ void registerAllNatives() {
   using namespace margelo::nitro::nitrohttp;
 
   // Register native JNI methods
-  
+  margelo::nitro::nitrohttp::JHybridHttpServerKtSpec::CxxPart::registerNatives();
 
   // Register Nitro Hybrid Objects
   HybridObjectRegistry::registerHybridObjectConstructor(
