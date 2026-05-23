@@ -15,8 +15,10 @@
 #include <fbjni/fbjni.h>
 #include <NitroModules/HybridObjectRegistry.hpp>
 
-#include "JHybridHttpServerKtSpec.hpp"
+#include "JHybridHttpForegroundServiceSpec.hpp"
+#include "JFunc_void.hpp"
 #include "HybridServerManager.hpp"
+#include <NitroModules/DefaultConstructableObject.hpp>
 
 namespace margelo::nitro::nitrohttp {
 
@@ -26,14 +28,22 @@ int initialize(JavaVM* vm) {
   });
 }
 
-
+struct JHybridHttpForegroundServiceSpecImpl: public jni::JavaClass<JHybridHttpForegroundServiceSpecImpl, JHybridHttpForegroundServiceSpec::JavaPart> {
+  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/nitrohttp/HybridHttpForegroundService;";
+  static std::shared_ptr<JHybridHttpForegroundServiceSpec> create() {
+    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridHttpForegroundServiceSpecImpl::javaobject()>();
+    jni::local_ref<JHybridHttpForegroundServiceSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
+    return javaPart->getJHybridHttpForegroundServiceSpec();
+  }
+};
 
 void registerAllNatives() {
   using namespace margelo::nitro;
   using namespace margelo::nitro::nitrohttp;
 
   // Register native JNI methods
-  margelo::nitro::nitrohttp::JHybridHttpServerKtSpec::CxxPart::registerNatives();
+  margelo::nitro::nitrohttp::JHybridHttpForegroundServiceSpec::CxxPart::registerNatives();
+  margelo::nitro::nitrohttp::JFunc_void_cxx::registerNatives();
 
   // Register Nitro Hybrid Objects
   HybridObjectRegistry::registerHybridObjectConstructor(
@@ -43,6 +53,12 @@ void registerAllNatives() {
                     "The HybridObject \"HybridServerManager\" is not default-constructible! "
                     "Create a public constructor that takes zero arguments to be able to autolink this HybridObject.");
       return std::make_shared<HybridServerManager>();
+    }
+  );
+  HybridObjectRegistry::registerHybridObjectConstructor(
+    "HttpForegroundService",
+    []() -> std::shared_ptr<HybridObject> {
+      return JHybridHttpForegroundServiceSpecImpl::create();
     }
   );
 }

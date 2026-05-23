@@ -9,7 +9,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build:android": "cd android && ./gradlew assembleDebug --console=plain --no-daemon"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

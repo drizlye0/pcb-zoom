@@ -18,6 +18,12 @@
         "language": "c++",
         "implementationClassName": "HybridServerManager"
       }
+    },
+    "HttpForegroundService": {
+     "android": {
+       "language": "kotlin",
+       "implementationClassName": "HybridHttpForegroundService"
+     }
     }
   },
   "ignorePaths": [

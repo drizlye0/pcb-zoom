@@ -7,8 +7,9 @@ export interface HttpServer extends HybridObject<{
   stop(): void;
 }
 
-export interface HttpServerKt extends HybridObject<{
- android: "kotlin"
+export interface HttpForegroundService extends HybridObject<{
+  android: 'kotlin';
 }> {
-  startForeground(server: HttpServer, port: number): void;
+  startForeground(task: () => void): void;
+  stopForeground(cb: () => void): void;
 }
