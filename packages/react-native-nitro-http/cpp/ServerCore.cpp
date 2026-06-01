@@ -85,7 +85,7 @@ void ServerCore::_setupRoutes() {
   });
 }
 
-void ServerCore::listen(double port) {
+void ServerCore::listen(int port) {
   if (_isRunning.load())
     return;
 
@@ -94,7 +94,7 @@ void ServerCore::listen(double port) {
   _setupRoutes();
 
   _serverThread = std::thread([this, port] {
-    _srv.listen("0.0.0.0", static_cast<int>(port));
+    _srv.listen("0.0.0.0", port);
   });
 }
 
