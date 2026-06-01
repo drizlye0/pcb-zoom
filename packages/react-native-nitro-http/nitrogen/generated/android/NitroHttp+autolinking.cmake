@@ -33,11 +33,10 @@ target_sources(
   # Autolinking Setup
   ../nitrogen/generated/android/NitroHttpOnLoad.cpp
   # Shared Nitrogen C++ sources
-  ../nitrogen/generated/shared/c++/HybridHttpServerSpec.cpp
-  ../nitrogen/generated/shared/c++/HybridHttpForegroundServiceSpec.cpp
-  ../nitrogen/generated/shared/c++/HybridServerManagerSpec.cpp
+  ../nitrogen/generated/shared/c++/HybridCallbackManagerSpec.cpp
+  ../nitrogen/generated/shared/c++/HybridSignalingServerSpec.cpp
   # Android-specific Nitrogen C++ sources
-  ../nitrogen/generated/android/c++/JHybridHttpForegroundServiceSpec.cpp
+  ../nitrogen/generated/android/c++/JHybridSignalingServerSpec.cpp
 )
 
 # From node_modules/react-native/ReactAndroid/cmake-utils/folly-flags.cmake

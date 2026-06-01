@@ -15,9 +15,8 @@
 #include <fbjni/fbjni.h>
 #include <NitroModules/HybridObjectRegistry.hpp>
 
-#include "JHybridHttpForegroundServiceSpec.hpp"
-#include "JFunc_void.hpp"
-#include "HybridServerManager.hpp"
+#include "JHybridSignalingServerSpec.hpp"
+#include "HCallbackManager.hpp"
 #include <NitroModules/DefaultConstructableObject.hpp>
 
 namespace margelo::nitro::nitrohttp {
@@ -28,12 +27,12 @@ int initialize(JavaVM* vm) {
   });
 }
 
-struct JHybridHttpForegroundServiceSpecImpl: public jni::JavaClass<JHybridHttpForegroundServiceSpecImpl, JHybridHttpForegroundServiceSpec::JavaPart> {
-  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/nitrohttp/HybridHttpForegroundService;";
-  static std::shared_ptr<JHybridHttpForegroundServiceSpec> create() {
-    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridHttpForegroundServiceSpecImpl::javaobject()>();
-    jni::local_ref<JHybridHttpForegroundServiceSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
-    return javaPart->getJHybridHttpForegroundServiceSpec();
+struct JHybridSignalingServerSpecImpl: public jni::JavaClass<JHybridSignalingServerSpecImpl, JHybridSignalingServerSpec::JavaPart> {
+  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/nitrohttp/HSignalingServer;";
+  static std::shared_ptr<JHybridSignalingServerSpec> create() {
+    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridSignalingServerSpecImpl::javaobject()>();
+    jni::local_ref<JHybridSignalingServerSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
+    return javaPart->getJHybridSignalingServerSpec();
   }
 };
 
@@ -42,23 +41,22 @@ void registerAllNatives() {
   using namespace margelo::nitro::nitrohttp;
 
   // Register native JNI methods
-  margelo::nitro::nitrohttp::JHybridHttpForegroundServiceSpec::CxxPart::registerNatives();
-  margelo::nitro::nitrohttp::JFunc_void_cxx::registerNatives();
+  margelo::nitro::nitrohttp::JHybridSignalingServerSpec::CxxPart::registerNatives();
 
   // Register Nitro Hybrid Objects
   HybridObjectRegistry::registerHybridObjectConstructor(
-    "ServerManager",
+    "CallbackManager",
     []() -> std::shared_ptr<HybridObject> {
-      static_assert(std::is_default_constructible_v<HybridServerManager>,
-                    "The HybridObject \"HybridServerManager\" is not default-constructible! "
+      static_assert(std::is_default_constructible_v<HCallbackManager>,
+                    "The HybridObject \"HCallbackManager\" is not default-constructible! "
                     "Create a public constructor that takes zero arguments to be able to autolink this HybridObject.");
-      return std::make_shared<HybridServerManager>();
+      return std::make_shared<HCallbackManager>();
     }
   );
   HybridObjectRegistry::registerHybridObjectConstructor(
-    "HttpForegroundService",
+    "SignalingServer",
     []() -> std::shared_ptr<HybridObject> {
-      return JHybridHttpForegroundServiceSpecImpl::create();
+      return JHybridSignalingServerSpecImpl::create();
     }
   );
 }

@@ -13,16 +13,16 @@
     "androidCxxLibName": "NitroHttp"
   },
   "autolinking": {
-    "ServerManager": {
+    "CallbackManager": {
       "android": {
         "language": "c++",
-        "implementationClassName": "HybridServerManager"
+        "implementationClassName": "HCallbackManager"
       }
     },
-    "HttpForegroundService": {
+    "SignalingServer": {
      "android": {
        "language": "kotlin",
-       "implementationClassName": "HybridHttpForegroundService"
+       "implementationClassName": "HSignalingServer"
      }
     }
   },
