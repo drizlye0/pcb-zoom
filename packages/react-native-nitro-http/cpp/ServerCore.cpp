@@ -34,7 +34,7 @@ void ServerCore::_setupRoutes() {
   _srv.Post("/answer", [this](const httplib::Request& req, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /answer");
     auto contentType = req.get_header_value("Content-Type");
-    if(contentType.find("application/json") == std::string::npos) {
+    if (contentType.find("application/json") == std::string::npos) {
       res.status = StatusCode::BadRequest_400;
       return;
     }
@@ -44,7 +44,7 @@ void ServerCore::_setupRoutes() {
       json payload = json::parse(req.body);
       answer = payload.get<RTCSessionDescriptionInit>();
     } catch (std::exception e) {
-    __android_log_print(ANDROID_LOG_ERROR, "NitroHttp", "Error Parsing json: %s", e.what());
+      __android_log_print(ANDROID_LOG_ERROR, "NitroHttp", "Error Parsing json: %s", e.what());
       res.status = StatusCode::InternalServerError_500;
       return;
     }
@@ -56,7 +56,7 @@ void ServerCore::_setupRoutes() {
   _srv.Post("/icecandidates", [this](const httplib::Request& req, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "POST /icecandidates");
     auto contentType = req.get_header_value("Content-Type");
-    if(contentType.find("application/json") == std::string::npos) {
+    if (contentType.find("application/json") == std::string::npos) {
       res.status = StatusCode::BadRequest_400;
       return;
     }
@@ -86,26 +86,23 @@ void ServerCore::_setupRoutes() {
 }
 
 void ServerCore::listen(int port) {
-  if (_isRunning.load())
+  if (_isRunning.load()) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "Server is running");
     return;
+  }
 
   _isRunning = true;
-
   _setupRoutes();
-
-  _serverThread = std::thread([this, port] {
-    _srv.listen("0.0.0.0", port);
-  });
+  _srv.listen("0.0.0.0", port);
 }
 
 void ServerCore::stop() {
-  if (!_isRunning.load())
+  if (!_isRunning.load()) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "Server is not running");
     return;
+  }
 
   _srv.stop();
-  if (_serverThread.joinable()) {
-    _serverThread.join();
-  }
 
   _isRunning = false;
 }

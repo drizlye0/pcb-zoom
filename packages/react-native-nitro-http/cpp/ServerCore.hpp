@@ -64,7 +64,6 @@ public:
 private:
   httplib::Server _srv;
   std::atomic<bool> _isRunning;
-  std::thread _serverThread;
 
   void _setupRoutes();
 };
