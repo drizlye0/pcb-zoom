@@ -27,8 +27,8 @@ FetchContent_MakeAvailable(json)
 # Define C++ library and add all sources
 add_library(${PACKAGE_NAME} SHARED
         src/main/cpp/cpp-adapter.cpp
-        ../cpp/HybridHttpServer.cpp
-        ../cpp/HybridServerManager.cpp
+        ../cpp/ServerCore.cpp
+        ../cpp/HCallbackManager.cpp
 )
 
 # Add Nitrogen specs :)
