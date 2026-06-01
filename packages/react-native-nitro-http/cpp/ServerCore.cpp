@@ -1,22 +1,9 @@
-#include "HybridHttpServer.hpp"
-#include "RTCIceCandidateInfo.hpp"
-#include "RTCSessionDescriptionInit.hpp"
-#include "SignalingCallbacks.hpp"
+#include "ServerCore.hpp"
 #include <NitroModules/HybridObject.hpp>
 #include <android/log.h>
-#include <exception>
-#include <functional>
-#include <httplib.h>
-#include <vector>
 
 namespace margelo::nitro::nitrohttp {
-HybridHttpServer::HybridHttpServer(const SignalingCallbacks& callbacks) : HybridObject(TAG) {
-  _offerCb = callbacks.offerCb;
-  _answerCb = callbacks.answerCb;
-  _iceCandidatesCb = callbacks.iceCandidatesCb;
-}
-
-void HybridHttpServer::_setupRoutes() {
+void ServerCore::_setupRoutes() {
   _srv.set_post_routing_handler([](const httplib::Request&, httplib::Response& res) {
     res.set_header("Access-Control-Allow-Origin", "*");
     res.set_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -37,7 +24,7 @@ void HybridHttpServer::_setupRoutes() {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /offer");
     res.set_content("Hello, world from http server written on c++", "text/plain");
     auto promise = _offerCb();
-    auto offer = promise->await().get()->await().get();
+    auto offer = promise->await().get();
 
     json payload = offer;
     res.set_content(payload.dump(), "application/json");
@@ -83,22 +70,22 @@ void HybridHttpServer::_setupRoutes() {
       return;
     }
 
-    auto promise = _iceCandidatesCb(iceCandidates);
-    auto candidates = promise->await().get()->await().get();
+    auto promise = _candidateCb(iceCandidates);
+    auto candidates = promise->await().get();
 
-    if (!candidates.has_value()) {
+    if (candidates.empty()) {
       res.set_content(json{}.dump(), "application/json");
       res.status = StatusCode::NoContent_204;
       return;
     }
 
-    json response = candidates.value();
+    json response = candidates;
     res.set_content(response.dump(), "application/json");
     res.status = StatusCode::OK_200;
   });
 }
 
-void HybridHttpServer::listen(double port) {
+void ServerCore::listen(double port) {
   if (_isRunning.load())
     return;
 
@@ -111,7 +98,7 @@ void HybridHttpServer::listen(double port) {
   });
 }
 
-void HybridHttpServer::stop() {
+void ServerCore::stop() {
   if (!_isRunning.load())
     return;
 
@@ -122,4 +109,6 @@ void HybridHttpServer::stop() {
 
   _isRunning = false;
 }
+
+ServerCore Server;
 } // namespace margelo::nitro::nitrohttp

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "HybridHttpServerSpec.hpp"
 #include "RTCIceCandidateInfo.hpp"
 #include "RTCSessionDescriptionInit.hpp"
-#include "SignalingCallbacks.hpp"
+#include "helpers.hpp"
 #include "nlohmann/detail/macro_scope.hpp"
 #include <android/log.h>
 #include <atomic>
@@ -51,22 +50,24 @@ inline void from_json(const json& j, RTCSessionDescriptionInit& descInit) {
 // NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCSessionDescriptionInit, sdp, type);
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RTCIceCandidateInfo, candidate, sdpMLineIndex, sdpMid);
 
-class HybridHttpServer : public HybridHttpServerSpec {
+class ServerCore {
 public:
-  HybridHttpServer(const SignalingCallbacks& callbacks);
+  ServerCore() = default;
 
-  void listen(double port) override;
-  void stop() override;
+  void listen(double port);
+  void stop();
+
+  OfferCallback _offerCb;
+  AnswerCallback _answerCb;
+  IceCandidateCallback _candidateCb;
 
 private:
-  decltype(SignalingCallbacks::offerCb) _offerCb;
-  decltype(SignalingCallbacks::answerCb) _answerCb;
-  decltype(SignalingCallbacks::iceCandidatesCb) _iceCandidatesCb;
-
   httplib::Server _srv;
   std::atomic<bool> _isRunning;
   std::thread _serverThread;
 
   void _setupRoutes();
 };
+
+extern ServerCore Server;
 } // namespace margelo::nitro::nitrohttp
