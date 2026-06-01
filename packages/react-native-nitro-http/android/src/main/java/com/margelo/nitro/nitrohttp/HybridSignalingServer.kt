@@ -12,7 +12,7 @@ class HybridSignalingServer : HybridSignalingServerSpec() {
             context,
             ServerForeground::class.java
         ).apply {
-            action = ServerForeground.ACTION_START,
+            action = ServerForeground.ACTION_START
             putExtra(
                 ServerForeground.EXTRA_PORT,
                 port.toInt()
