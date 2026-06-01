@@ -2,16 +2,14 @@ import React, {
   createContext,
   useContext,
   useState,
-  useEffect,
-  useRef,
   ReactNode,
 } from 'react';
 import { webrtcManager } from '@/services';
 import { RTCIceCandidate } from 'react-native-webrtc';
 import { RTCSessionDescriptionInit } from 'react-native-webrtc/lib/typescript/RTCSessionDescription';
 import {
-  createSignalingServer,
-  HttpServer,
+  SignalingServer,
+  CallbackManager,
   RTCIceCandidateInfo,
 } from 'react-native-nitro-http';
 
@@ -19,7 +17,7 @@ type ServerStatus = 'stopped' | 'disconnected' | 'connected';
 
 interface SignalingServerContextType {
   status: ServerStatus;
-  listen: (port: number) => void;
+  startForeground: (port: number) => void;
   stop: () => void;
 }
 
@@ -33,20 +31,26 @@ export const SignalingServerProvider = ({
   children: ReactNode;
 }) => {
   const [status, setStatus] = useState<ServerStatus>('stopped');
-  const serverRef = useRef<HttpServer | null>(null);
 
-  const offerCb = async () => {
-    const offer =
-      (await webrtcManager.createOffer()) as RTCSessionDescriptionInit;
+  CallbackManager.setOffer(() => {
+    let offer: RTCSessionDescriptionInit = {
+      sdp: "",
+      type: ""
+    };
+
+    webrtcManager.createOffer().then((value) => {
+      offer = value;
+    })
+
     return offer;
-  };
+  });
 
-  const answerCb = async (answer: RTCSessionDescriptionInit) => {
+  CallbackManager.setAnswer(async (answer: RTCSessionDescriptionInit) => {
     console.log('handle answer: ', JSON.stringify(answer));
     await webrtcManager.handleAnswer(answer);
-  };
+  });
 
-  const iceCandidatesCb = async (candidateInfo: RTCIceCandidateInfo[]) => {
+  CallbackManager.setIceCandidate((candidateInfo: RTCIceCandidateInfo[]) => {
     const remoteCandidates = candidateInfo.map((c) => {
       const candidate = new RTCIceCandidate({
         candidate: c.candidate,
@@ -58,11 +62,14 @@ export const SignalingServerProvider = ({
     });
 
     console.log('remote candidates: ', JSON.stringify(remoteCandidates));
-    await webrtcManager.handleIceCandidates(remoteCandidates);
-    const localCandidates = webrtcManager.getIceCandidates();
+    let localCandidates: RTCIceCandidateInit[] | null = [];
 
-    if (localCandidates == null) {
-      return undefined;
+    webrtcManager.handleIceCandidates(remoteCandidates).then(() => {
+      localCandidates = webrtcManager.getIceCandidates();
+    });
+
+    if (localCandidates === null) {
+      return [];
     }
 
     const localCandidatesInfo = localCandidates.map((c) => {
@@ -76,33 +83,20 @@ export const SignalingServerProvider = ({
     });
 
     return localCandidatesInfo;
-  };
+  });
 
-  useEffect(() => {
-    serverRef.current = createSignalingServer({
-      offerCb,
-      answerCb,
-      iceCandidatesCb,
-    });
-
-    return () => {
-      serverRef.current?.stop();
-      serverRef.current = null;
-    };
-  }, []);
-
-  const listen = (port: number) => {
-    serverRef.current?.listen(port);
+  const startForeground = (port: number) => {
+    SignalingServer.startForeground(port);
     setStatus('disconnected');
   };
 
   const stop = () => {
-    serverRef.current?.stop();
+    SignalingServer.stop();
     setStatus('stopped');
   };
 
   return (
-    <SignalingServerContext.Provider value={{ status, listen, stop }}>
+    <SignalingServerContext.Provider value={{ status, startForeground, stop }}>
       {children}
     </SignalingServerContext.Provider>
   );
