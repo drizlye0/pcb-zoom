@@ -1,13 +1,13 @@
 import type {
-  ServerManager,
   SignalingCallbacks,
   RTCIceCandidateInfo,
-} from './ServerManager.nitro';
-import { type HttpServer } from './HttpServer.nitro';
+} from './types';
+import { type SignalingServer } from './SignalingServer.nitro';
+import { type CallbackManager } from './CallbackManager.nitro';
 
 export type {
-  ServerManager,
-  HttpServer,
+  SignalingServer,
   SignalingCallbacks,
   RTCIceCandidateInfo,
+  CallbackManager
 };
