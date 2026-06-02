@@ -28,7 +28,7 @@ int initialize(JavaVM* vm) {
 }
 
 struct JHybridSignalingServerSpecImpl: public jni::JavaClass<JHybridSignalingServerSpecImpl, JHybridSignalingServerSpec::JavaPart> {
-  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/nitrohttp/HSignalingServer;";
+  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/nitrohttp/HybridSignalingServer;";
   static std::shared_ptr<JHybridSignalingServerSpec> create() {
     static const auto constructorFn = javaClassStatic()->getConstructor<JHybridSignalingServerSpecImpl::javaobject()>();
     jni::local_ref<JHybridSignalingServerSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);

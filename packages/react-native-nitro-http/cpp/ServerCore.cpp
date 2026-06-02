@@ -91,6 +91,7 @@ void ServerCore::listen(int port) {
     return;
   }
 
+  __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "Starting server..");
   _isRunning = true;
   _setupRoutes();
   _srv.listen("0.0.0.0", port);
@@ -103,6 +104,7 @@ void ServerCore::stop() {
   }
 
   _srv.stop();
+  __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "Stopped server");
 
   _isRunning = false;
 }

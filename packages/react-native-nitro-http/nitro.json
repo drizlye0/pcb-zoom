@@ -22,7 +22,7 @@
     "SignalingServer": {
      "android": {
        "language": "kotlin",
-       "implementationClassName": "HSignalingServer"
+       "implementationClassName": "HybridSignalingServer"
      }
     }
   },
