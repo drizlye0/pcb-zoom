@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -6,9 +6,19 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import Slider from '@react-native-community/slider'
+import { webrtcManager } from '@/services';
+
+const ZoomPromise = webrtcManager.getMaxZoomLevel();
+const getMaxZoomLevel = () => {
+  const level = use(ZoomPromise);
+  if(level === undefined) return 1;
+  return level;
+}
 
 export function ZoomControl() {
   const [flash, setFlash] = useState<boolean>(false);
+  const [sliderValue, setSliderValue] = useState<number>(0);
 
   const borderColor = useThemeColor({ light: '#E1E1E1', dark: '#333' }, 'icon');
   const sliderTrackColor = useThemeColor(
@@ -38,20 +48,23 @@ export function ZoomControl() {
           </ThemedText>
         </View>
         <ThemedText style={[styles.zoomValue, { color: secondaryTextColor }]}>
-          1.0x
+          {sliderValue.toFixed(1)}x
         </ThemedText>
       </View>
 
       <View style={styles.sliderContainer}>
-        <View
-          style={[styles.sliderTrack, { backgroundColor: sliderTrackColor }]}
+        <Slider
+          style={styles.sliderTrack}
+          minimumValue={0}
+          step={getMaxZoomLevel() * 0.10}
+          maximumValue={getMaxZoomLevel()}
+          onValueChange={(value) => setSliderValue(value)}
         />
-        <View style={styles.sliderThumb} />
       </View>
 
       <View style={[styles.divider, { backgroundColor: borderColor }]} />
 
-      <Pressable onPress={() => setFlash(!flash)}>
+      <Pressable onPress={() => setFlash(true)}>
         <View style={[styles.flashButton, { backgroundColor: buttonBgColor }]}>
           <MaterialIcons
             name="flashlight-off"
@@ -99,7 +112,6 @@ const styles = StyleSheet.create({
   },
   sliderTrack: {
     height: verticalScale(6),
-    borderRadius: verticalScale(3),
     width: '100%',
   },
   sliderThumb: {
