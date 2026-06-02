@@ -102,13 +102,14 @@ class ServerForeground : Service() {
     }
 
     private fun createNotification(): Notification {
+        val icon = applicationInfo.icon
         return NotificationCompat.Builder(
             this,
             CHANNEL_ID
         )
-            .setContentTitle("Server Runnnig")
+            .setContentTitle("Server Running")
             .setContentText("Native server is running")
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
+            .setSmallIcon(if (icon != 0) icon else android.R.drawable.ic_dialog_info)
             .setOngoing(true)
             .build()
     }
