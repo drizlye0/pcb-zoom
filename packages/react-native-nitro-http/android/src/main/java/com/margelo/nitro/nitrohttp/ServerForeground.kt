@@ -3,6 +3,7 @@ package com.margelo.nitro.nitrohttp
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -103,14 +104,31 @@ class ServerForeground : Service() {
 
     private fun createNotification(): Notification {
         val icon = applicationInfo.icon
+        
+        val stopIntent = Intent(this, ServerForeground::class.java).apply {
+            action = ACTION_STOP
+        }
+        val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+        val pendingIntent = PendingIntent.getService(
+            this,
+            0,
+            stopIntent,
+            flag
+        )
+
         return NotificationCompat.Builder(
             this,
             CHANNEL_ID
         )
             .setContentTitle("Server Running")
-            .setContentText("Native server is running")
+            .setContentText("Native server is running, tap to stop")
             .setSmallIcon(if (icon != 0) icon else android.R.drawable.ic_dialog_info)
             .setOngoing(true)
+            .setContentIntent(pendingIntent)
             .build()
     }
 
