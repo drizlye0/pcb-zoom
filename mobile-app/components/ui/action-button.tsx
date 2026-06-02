@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Pressable, View } from 'react-native';
+import { StyleSheet, Pressable, View, Platform, PermissionsAndroid } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemedText } from '@/components/themed-text';
 import { moderateScale, scale, verticalScale } from '@/constants/scale';
@@ -17,6 +17,20 @@ export function ActionButton() {
   };
 
   const startService = async () => {
+    if (Platform.OS === 'android' && Platform.Version >= 33) {
+      try {
+        const hasPermission = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+        if (!hasPermission) {
+          await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+          );
+        }
+      } catch (err) {
+        console.warn('Error checking/requesting notification permission:', err);
+      }
+    }
     startForeground(8080);
     await webrtcManager.startLocalStream();
   };
