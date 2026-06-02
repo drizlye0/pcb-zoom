@@ -82,6 +82,14 @@ export class WebRTCManager implements WebRTCProvider {
     });
   }
 
+  async getMaxZoomLevel() {
+    return await this.localStream?.getTracks().at(0)?._getMaxZoomLevel();
+  }
+
+  setZoom(level: number) {
+    this.localStream?.getTracks().at(0)?._setZoom(level);
+  }
+
   closePeer() {
     this.pc?.close();
   }
