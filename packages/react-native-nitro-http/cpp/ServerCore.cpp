@@ -15,6 +15,11 @@ void ServerCore::_setupRoutes() {
     res.status = StatusCode::OK_200;
   });
 
+  _srv.Get("/index", [](const httplib::Request&, httplib::Response& res) {
+    __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /index");
+    res.set_content(html::Index, "text/html");
+  });
+
   _srv.Get("/health", [](const httplib::Request&, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /");
     res.set_content("Hello, world from http server written on c++", "text/plain");

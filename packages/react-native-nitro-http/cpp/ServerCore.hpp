@@ -8,7 +8,7 @@
 #include <atomic>
 #include <httplib.h>
 #include <nlohmann/json.hpp>
-#include <thread>
+#include "html/index.hpp"
 #include <variant>
 
 namespace margelo::nitro::nitrohttp {
