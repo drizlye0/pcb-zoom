@@ -1,7 +1,7 @@
 #include <string>
 
 namespace margelo::nitro::nitrohttp::html {
-inline std::string Index = R"(
+inline const std::string Index = R"(
 <!doctype html>
 <html lang="en">
   <head>
