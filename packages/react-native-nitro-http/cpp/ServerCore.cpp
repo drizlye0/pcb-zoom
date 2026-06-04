@@ -27,11 +27,17 @@ void ServerCore::_setupRoutes() {
 
   _srv.Get("/offer", [this](const httplib::Request&, httplib::Response& res) {
     __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "GET /offer");
-    res.set_content("Hello, world from http server written on c++", "text/plain");
-    auto promise = _offerCb();
-    auto offer = promise->await().get();
+    auto offer = _offerCb()->await().get()->await().get();
+    json payload;
 
-    json payload = offer;
+    try {
+      payload = offer;
+    } catch (std::exception e) {
+      __android_log_print(ANDROID_LOG_INFO, "NitroHttp", "Error parsing json: %s", e.what());
+      res.status = StatusCode::InternalServerError_500;
+      return;
+    }
+
     res.set_content(payload.dump(), "application/json");
     res.status = StatusCode::OK_200;
   });

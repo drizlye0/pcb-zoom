@@ -55,7 +55,7 @@ namespace margelo::nitro::nitrohttp {
 
     public:
       // Methods
-      virtual void setOffer(const std::function<std::shared_ptr<Promise<RTCSessionDescriptionInit>>()>& cb) = 0;
+      virtual void setOffer(const std::function<std::shared_ptr<Promise<std::shared_ptr<Promise<RTCSessionDescriptionInit>>>>()>& cb) = 0;
       virtual void setAnswer(const std::function<void(const RTCSessionDescriptionInit& /* answer */)>& cb) = 0;
       virtual void setIceCandidate(const std::function<std::shared_ptr<Promise<std::vector<RTCIceCandidateInfo>>>(const std::vector<RTCIceCandidateInfo>& /* c */)>& cb) = 0;
 

@@ -32,17 +32,8 @@ export const SignalingServerProvider = ({
 }) => {
   const [status, setStatus] = useState<ServerStatus>('stopped');
 
-  CallbackManager.setOffer(() => {
-    let offer: RTCSessionDescriptionInit = {
-      sdp: "",
-      type: ""
-    };
-
-    webrtcManager.createOffer().then((value) => {
-      offer = value;
-    })
-
-    return offer;
+  CallbackManager.setOffer(async () => {
+    return await webrtcManager.createOffer()
   });
 
   CallbackManager.setAnswer(async (answer: RTCSessionDescriptionInit) => {
