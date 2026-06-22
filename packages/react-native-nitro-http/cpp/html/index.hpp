@@ -11,43 +11,100 @@ inline const std::string Index = R"(
   </head>
 
   <style>
-    video {
-      transform: rotate(-90deg);
-      background-color: #000;
+    :root {
+      --bg: #f5f5f5;
+      --text: #1a1a1a;
+      --card: #ffffff;
+      --border: #ccc;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #e0e0e0;
+        --card: #1e1e1e;
+        --border: #333;
+        --accent: #3b82f6;
+        --accent-hover: #60a5fa;
+      }
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     body {
-      height: 100vh;
-    }
-    div {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      height: 50vh;
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
       justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    input {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+    }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover {
+      background: var(--accent-hover);
+    }
+    video {
+      transform: rotate(-90deg);
+      background: #000;
+      border-radius: 8px;
+      max-width: 100%;
+      position: absolute;
+      top: -28%;
     }
   </style>
 
   <body>
-    <input id="serverIP" type="text" size="20" placeholder="server ip" />
-    <input id="serverPort" type="text" size="20" placeholder="port" />
-    <br />
-    <br />
-    <button id="connectBtn">connect</button>
-    <button id="stateBtn">state</button>
+    <div class="controls">
+      <input id="serverIP" type="text" size="16" placeholder="server ip" />
+      <input id="serverPort" type="text" size="16" placeholder="port" />
+      <button id="connectBtn">connect</button>
+    </div>
 
-    <div>
       <video
         id="remoteStream"
         autoplay
         playsinline
-        width="1080"
-        height="1920"
-        class="remoteStream"></video>
-    </div>
+        width="792"
+        height="1408"></video>
 
     <script>
       const connectBtn = document.getElementById('connectBtn');
       const remoteStream = document.getElementById('remoteStream');
       const serverIPInput = document.getElementById('serverIP');
       const serverPortInput = document.getElementById('serverPort');
-      const stateBtn = document.getElementById('stateBtn');
 
       const pc = new RTCPeerConnection({
         iceServers: [
@@ -63,16 +120,13 @@ inline const std::string Index = R"(
         localCandidates.push(event.candidate);
       };
 
-      // Escuchar el stream remoto cuando llegue
       pc.ontrack = (event) => {
         if (remoteStream.srcObject !== event.streams[0]) {
           remoteStream.srcObject = event.streams[0];
-          console.log('Recibiendo stream remoto');
         }
       };
 
       const fetchOffer = async (baseUrl) => {
-        console.log('Solicitando offer...');
         const response = await fetch(baseUrl + '/offer', {
           method: 'GET',
           headers: {
@@ -81,16 +135,14 @@ inline const std::string Index = R"(
         });
 
         if (!response.ok) {
-          throw new Error('Error en offer: ' + response.status);
+          throw new Error('Offer Error: ' + response.status);
         }
 
         const offer = await response.json();
-        console.log('Offer recibida:', offer);
         return offer;
       };
 
       const sendAnswer = async (baseUrl, answer) => {
-        console.log('Enviando answer...');
         const response = await fetch(baseUrl + '/answer', {
           method: 'POST',
           headers: {
@@ -100,13 +152,11 @@ inline const std::string Index = R"(
         });
 
         if (!response.ok) {
-          throw new Error('Error al enviar answer: ' + response.status);
+          throw new Error('Error on send answer: ' + response.status);
         }
-        console.log('Answer enviada correctamente');
       };
 
       const handleCandidates = async (baseUrl) => {
-        console.log('Intercambiando candidatos ICE...');
         const response = await fetch(baseUrl + '/icecandidates', {
           method: 'POST',
           headers: {
@@ -118,7 +168,7 @@ inline const std::string Index = R"(
         localCandidates = [];
 
         if (!response.ok) {
-          throw new Error('Error en candidatos: ' + response.status);
+          throw new Error('Candidates Error: ' + response.status);
         }
 
         const candidates = await response.json();
@@ -126,17 +176,9 @@ inline const std::string Index = R"(
           for (const candidate of candidates) {
             await pc.addIceCandidate(candidate);
           }
-          console.log(
-            'Procesados ' + candidates.length + ' candidatos remotos',
-          );
         } else {
-          console.log('No se recibieron candidatos remotos');
+          console.log('No candidates recieved');
         }
-      };
-
-      const connectionState = () => {
-        const state = pc.connectionState;
-        console.log('state: ', state);
       };
 
       const connect = async () => {
@@ -145,28 +187,22 @@ inline const std::string Index = R"(
           const port = serverPortInput.value;
 
           if (!ip || !port) {
-            alert('Por favor, ingresa IP y Puerto');
+            alert('insert ip address and port');
             return;
           }
 
-          // Aseguramos el protocolo http:// para que fetch no use rutas relativas
           const baseUrl = 'http://' + ip + ':' + port;
-          console.log('Conectando a:', baseUrl);
 
-          // 1. Obtener Offer
           const offer = await fetchOffer(baseUrl);
           await pc.setRemoteDescription(offer);
 
-          // 2. Crear y enviar Answer
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
           await sendAnswer(baseUrl, answer);
 
-          // 3. Intercambiar candidatos (esperar un poco a que se generen locales)
           setTimeout(() => handleCandidates(baseUrl), 1000);
         } catch (error) {
-          console.error('Error durante la conexión:', error);
-          alert('Error al conectar: ' + error);
+          alert('Connection Error: ' + error);
         }
       };
 
