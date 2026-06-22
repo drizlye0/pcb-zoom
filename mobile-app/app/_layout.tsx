@@ -18,6 +18,7 @@ export default function RootLayout() {
               backgroundColor: backgroundColor,
             },
             headerShadowVisible: false,
+            statusBarStyle: "auto",
             headerTitleStyle: {
               fontSize: scale(28),
               fontWeight: 'bold',
