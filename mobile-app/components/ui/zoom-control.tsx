@@ -33,6 +33,12 @@ export function ZoomControl() {
     { light: '#F9FAFB', dark: '#111827' },
     'background',
   );
+  
+  const setZoom = (level: number) => {
+    console.log(level);
+    setSliderValue(level);
+    webrtcManager.setZoom(level);
+  }
 
   return (
     <ThemedView style={[styles.container, { borderColor }]}>
@@ -58,7 +64,7 @@ export function ZoomControl() {
           minimumValue={0}
           step={getMaxZoomLevel() * 0.10}
           maximumValue={getMaxZoomLevel()}
-          onValueChange={(value) => setSliderValue(value)}
+          onValueChange={(value) => setZoom(value)}
         />
       </View>
 
