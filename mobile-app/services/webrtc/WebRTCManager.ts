@@ -87,7 +87,7 @@ export class WebRTCManager implements WebRTCProvider {
   }
 
   setZoom(level: number) {
-    this.localStream?.getTracks().at(0)?._setZoom(level);
+    this.localStream?.getVideoTracks().at(0)?._setZoom(level);
   }
 
   closePeer() {
